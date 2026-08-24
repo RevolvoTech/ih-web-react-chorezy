@@ -1,0 +1,17 @@
+{
+  "name": "Chorezy",
+  "short_name": "Chorezy",
+  "description": "Local chores and trusted neighborhood helpers across the United States and Canada.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fffaf4",
+  "theme_color": "#175cd3",
+  "icons": [
+    {
+      "src": "/brand/logo-color.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

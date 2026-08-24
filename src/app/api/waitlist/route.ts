@@ -1,0 +1,99 @@
+import crypto from "node:crypto";
+import { createClient } from "@supabase/supabase-js";
+import { NextResponse } from "next/server";
+
+const REFERRAL_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const ALLOWED_ROLES = new Set(["chore-poster", "adult-helper", "young-helper", "guardian", "business"]);
+const ALLOWED_COUNTRIES = new Set(["US", "CA"]);
+const PRODUCTION_ORIGINS = new Set(["https://chorezy.com", "https://www.chorezy.com"]);
+
+function json(message: string, status = 200) {
+  return NextResponse.json({ message }, { status, headers: { "Cache-Control": "no-store" } });
+}
+
+function referralCode(email: string, salt: string) {
+  const bytes = crypto.createHmac("sha256", salt).update(email).digest();
+  // Keep the legacy CF-XXXXXX format while this writes to the existing table.
+  let value = "CF-";
+  for (let index = 0; index < 6; index += 1) {
+    value += REFERRAL_CHARS[bytes[index] % REFERRAL_CHARS.length];
+  }
+  return value;
+}
+
+function validPostalCode(country: string, value: string) {
+  return country === "US"
+    ? /^\d{5}(?:-\d{4})?$/.test(value)
+    : /^[A-Z]\d[A-Z][ -]?\d[A-Z]\d$/.test(value);
+}
+
+export async function POST(request: Request) {
+  const origin = request.headers.get("origin") ?? "";
+  const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+  if (origin && !PRODUCTION_ORIGINS.has(origin) && !(process.env.NODE_ENV !== "production" && isLocal)) {
+    return json("Origin not allowed.", 403);
+  }
+
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const referralSalt = process.env.REFERRAL_SALT;
+  if (!supabaseUrl || !serviceRoleKey || !referralSalt) {
+    console.error("Chorezy waitlist is missing required server configuration.");
+    return json("The waitlist is temporarily unavailable. Please try again shortly.", 503);
+  }
+
+  let input: Record<string, unknown>;
+  try {
+    input = await request.json() as Record<string, unknown>;
+  } catch {
+    return json("The submitted form could not be read.", 400);
+  }
+
+  if (input.website) return json("You are on the Chorezy waitlist.");
+
+  const email = String(input.email || "").trim().toLowerCase();
+  const role = String(input.role || "").trim();
+  const country = String(input.country || "").trim().toUpperCase();
+  const postalCode = String(input.postalCode || "").trim().toUpperCase();
+  const referral = String(input.referral || "direct").trim().toUpperCase();
+
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return json("Enter a valid email address.", 400);
+  }
+  if (!ALLOWED_ROLES.has(role)) return json("Choose how you plan to use Chorezy.", 400);
+  if (!ALLOWED_COUNTRIES.has(country) || !validPostalCode(country, postalCode)) {
+    return json("Enter a valid U.S. ZIP code or Canadian postal code.", 400);
+  }
+
+  const supabase = createClient(supabaseUrl, serviceRoleKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+  const code = referralCode(email, referralSalt);
+  const referredBy = referral === "DIRECT" || !/^[A-Z0-9-]{3,32}$/.test(referral) ? null : referral;
+  const { error } = await supabase.from("choreify_waitlist").insert({
+    email,
+    role,
+    zipcode: postalCode,
+    country,
+    referral_code: code,
+    referred_by_code: referredBy,
+    location_source: "manual",
+    metadata: {
+      brand: "Chorezy",
+      market: "north_america",
+      source_domain: "chorezy.com",
+      submitted_at: new Date().toISOString(),
+    },
+  });
+
+  if (error && error.code !== "23505") {
+    console.error("Chorezy waitlist insert failed", { code: error.code });
+    return json("We could not save your place right now. Please try again.", 503);
+  }
+
+  return json("You are on the Chorezy waitlist. We will email you when your area is ready.");
+}
+
+export function GET() {
+  return json("Method not allowed.", 405);
+}

@@ -1,0 +1,10 @@
+# Chorezy
+
+Chorezy is a neighborhood chore marketplace being built for the United States and Canada.
+
+The product is designed to connect people and local businesses who need help with young and adult helpers nearby. Young Helper participation includes guardian oversight. Chorezy is currently accepting waitlist registrations at https://chorezy.com/.
+
+Canonical site: https://chorezy.com/
+Safety overview: https://chorezy.com/safety/
+Privacy: https://chorezy.com/privacy/
+Terms: https://chorezy.com/terms/
