@@ -4,17 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Brand } from "./components/Brand";
+import { CategoryCarousel } from "./components/CategoryCarousel";
 import { Icon } from "./components/Icons";
 import { WaitlistForm } from "./components/WaitlistForm";
 import { WaitlistCount } from "./components/WaitlistCount";
 import { faqItems } from "./content/faqs";
-
-const choreTypes = [
-  ["Yard care", "/chores/yard-care/"],
-  ["Pet care", "/chores/pet-care/"],
-  ["Errands", "/chores/errands/"],
-  ["Home help", "/chores/home-help/"],
-] as const;
 
 const safetyItems = [
   "Young Helpers ages 14–17 and Adult Helpers ages 18+",
@@ -140,11 +134,9 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          <div className="shell chore-ribbon" aria-label="Example chore categories">
-            <span>Popular ways to use Chorezy</span>
-            <div>{choreTypes.map(([type, href]) => <Link href={href} key={type}>{type}</Link>)}</div>
-          </div>
         </section>
+
+        <CategoryCarousel />
 
         <section className="audience-section" aria-labelledby="audience-heading">
           <div className="shell">
@@ -161,7 +153,7 @@ export default function HomePage() {
                 <span className="audience-card__icon"><Icon name="earn" size={28} /></span>
                 <div><p>Young Helpers · ages 14–17</p><h3>Turn school breaks into nearby earnings.</h3><span>Explore age-appropriate local opportunities designed around guardian involvement.</span><Link href="/earn/young-helpers/">Learn about Young Helpers</Link></div>
               </article>
-              <article className="audience-card audience-card--guardian">
+              <article className="audience-card audience-card--adult">
                 <span className="audience-card__icon"><Icon name="family" size={28} /></span>
                 <div><p>Adult Helpers · ages 18+</p><h3>Choose flexible work close to home.</h3><span>Discover eligible local chores, review the details, and make an offer when the work fits.</span><Link href="/earn/adult-helpers/">Learn about Adult Helpers</Link></div>
               </article>
@@ -244,7 +236,6 @@ export default function HomePage() {
               <p className="section-kicker">Safety belongs in the product</p>
               <h2 id="safety-heading">Built for the people behind every task.</h2>
               <p>Chorezy is being designed around identity and eligibility checks, guardian involvement, in-app communication, protected payment flows, and task-level safety tools. The active-chore emergency flow supports police/safety, medical, and fire requests through our response integration, while keeping a direct 911 option visible.</p>
-              <p className="safety-disclaimer">Emergency-response availability is still being tested for launch. In immediate danger, call 911 directly.</p>
               <Link className="text-link" href="/safety/">Read our safety approach <Icon name="arrow" /></Link>
             </div>
             <div className="safety-list">

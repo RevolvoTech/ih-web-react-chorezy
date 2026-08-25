@@ -15,10 +15,13 @@ Chorezy is a neighborhood chore marketplace preparing to launch in the United St
   disciplined accents drawn from the existing multicolor Chorezy mark.
 - Use original human-centered lifestyle photography rather than fake product
   dashboards or generic div-based screenshots.
-- Reuse the app's branded gradient family for a few expressive moments:
-  `#FFA000 → #FF5533 → #FF3A6B → #8E2DE2 → #226DFF`, with
-  `#00D6D6 → #226DFF → #6F21FF` as the cool wave variant. Keep reading
-  surfaces neutral and avoid applying gradients to every card.
+- Use the role colors already established by the Chorezy app: Chore Poster
+  `#226DFF`, Young Helper `#FF5533 → #FF3A6B`, Adult Helper `#8E44AD`,
+  Guardian `#0F9D58`, and Business `#1A1A1A`. Primary actions use the Chore
+  Poster blue gradient; earnings use the Young Helper gradient; trust and
+  community moments use Guardian green; Adult Helper purple appears only in
+  that role's context. Reserve the full role spectrum for a rare brand frame,
+  never a generic purple mesh. Keep reading surfaces neutral.
 - Pair Bricolage Grotesque display type with DM Sans body type through
   `next/font`. Reserve Bricolage for major display headlines; brand text,
   navigation, buttons, subtitles, card headings, FAQs, and forms use DM Sans.
@@ -35,6 +38,9 @@ Chorezy is a neighborhood chore marketplace preparing to launch in the United St
 - Safety green: `#087d5b`
 - Accent pink: `#e90067`
 - Accent orange: `#f45d00`
+- Adult Helper: `#8e44ad`
+- Young Helper: `#ff5533` / `#ff3a6b`
+- Business: `#1a1a1a`
 - Surface: `#ffffff`
 - Border: `rgba(21, 33, 59, 0.14)`
 

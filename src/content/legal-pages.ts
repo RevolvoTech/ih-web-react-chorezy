@@ -7,7 +7,7 @@ export const legalPages = {
     sections: [
       ["Clear helper types", "Young Helpers and Adult Helpers have different eligibility needs. Chorezy is designed to keep those differences visible throughout discovery and task participation."],
       ["Guardian involvement", "Young Helper participation is designed around guardian visibility and approval controls appropriate to the account and task."],
-      ["Account and task controls", "Verification, task eligibility, reporting, and emergency-support tooling are part of the launch architecture. The active-chore flow under testing supports police or safety, medical, and fire requests through an emergency-response integration, with a direct 911 option. Exact availability may vary during testing and rollout. Call 911 in immediate danger."],
+      ["Account and task controls", "Verification, task eligibility, reporting, and emergency-support tooling are part of the launch architecture. At launch, the active-chore flow will support police or safety, medical, and fire requests through Noonlight, with a direct 911 option."],
       ["Protected communication and payment flows", "Keeping task communication and payment activity within the product creates a clearer record and supports safer issue resolution."],
     ],
   },

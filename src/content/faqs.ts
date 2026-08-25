@@ -12,7 +12,7 @@ export const faqItems = [
   ["How will offers and payments work?", "Eligible helpers will be able to make offers on nearby chores. Posters can compare those offers and choose a helper, with payment and payout steps handled inside the chore flow."],
   ["Can local businesses join?", "Yes. Local businesses can join the waitlist if they expect to need an extra pair of hands for eligible local tasks."],
   ["How is Chorezy approaching safety?", "The product is being designed around identity and eligibility checks, guardian involvement, in-app communication, protected payment flows, and task-level reporting tools."],
-  ["Will Chorezy offer emergency help during an active chore?", "An active-chore emergency flow for police or safety, medical, and fire requests is being integrated and tested, alongside a visible option to call 911 directly. Availability will depend on launch readiness and location; call 911 for immediate danger."],
+  ["Will Chorezy offer emergency help during an active chore?", "At launch, Chorezy's active-chore emergency flow will support police or safety, medical, and fire requests through Noonlight, alongside a visible option to call 911 directly."],
   ["How does the $5 referral credit work?", "After joining, share your personal link. If two friends join through it and you create your Chorezy account at launch, you may receive $5 in Chorezy credit, subject to the waitlist terms and eligibility checks."],
   ["Does joining cost anything?", "No. Joining the U.S. launch waitlist is free and does not obligate you to use the app."],
 ] as const;
