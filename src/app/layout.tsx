@@ -1,6 +1,18 @@
 import type { Metadata, Viewport } from "next";
+import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
 import type { ReactNode } from "react";
+import { Analytics } from "@vercel/analytics/next";
 import "../styles.css";
+
+const displayFont = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-display",
+});
+
+const bodyFont = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-body",
+});
 
 const title = "Chorezy | Local Chores and Trusted Neighborhood Helpers";
 const description = "Chorezy is a neighborhood chore marketplace being built for the United States and Canada. Join the waitlist to find local help or earn close to home.";
@@ -52,7 +64,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={`${displayFont.variable} ${bodyFont.variable}`}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

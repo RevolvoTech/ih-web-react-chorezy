@@ -3,7 +3,7 @@ export const legalPages = {
     title: "Safety at Chorezy",
     description: "How Chorezy is approaching helper eligibility, guardian involvement, communication, payments, and safety reporting.",
     eyebrow: "Safety overview",
-    intro: "Chorezy is being built for real-world neighborhood work. That means safety decisions must be part of the product—not a paragraph added later.",
+    intro: "Chorezy is being built for real-world neighborhood work. That means safety decisions must be part of the product, not a paragraph added later.",
     sections: [
       ["Clear helper types", "Young Helpers and Adult Helpers have different eligibility needs. Chorezy is designed to keep those differences visible throughout discovery and task participation."],
       ["Guardian involvement", "Young Helper participation is designed around guardian visibility and approval controls appropriate to the account and task."],

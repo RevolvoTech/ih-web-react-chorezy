@@ -3,6 +3,7 @@ import { Icon } from "./Icons";
 
 type Country = "US" | "CA";
 type FormStatus = "idle" | "submitting" | "success" | "error";
+type ErrorField = "email" | "role" | "postalCode" | null;
 
 type FormValues = {
   email: string;
@@ -35,10 +36,15 @@ function isValidPostalCode(country: Country, value: string) {
     : /^[A-Z]\d[A-Z][ -]?\d[A-Z]\d$/.test(normalized);
 }
 
+function isValidEmail(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
 export function WaitlistForm() {
   const [values, setValues] = useState<FormValues>(initialValues);
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
+  const [errorField, setErrorField] = useState<ErrorField>(null);
 
   const postalLabel = useMemo(
     () => (values.country === "US" ? "ZIP code" : "Postal code"),
@@ -48,20 +54,33 @@ export function WaitlistForm() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("");
+    setErrorField(null);
+
+    if (!isValidEmail(values.email)) {
+      setStatus("error");
+      setErrorField("email");
+      setMessage("Enter a valid email address.");
+      document.getElementById("waitlist-email")?.focus();
+      return;
+    }
 
     if (!values.role) {
       setStatus("error");
+      setErrorField("role");
       setMessage("Choose how you plan to use Chorezy.");
+      document.getElementById("waitlist-role")?.focus();
       return;
     }
 
     if (!isValidPostalCode(values.country, values.postalCode)) {
       setStatus("error");
+      setErrorField("postalCode");
       setMessage(
         values.country === "US"
           ? "Enter a valid U.S. ZIP code."
           : "Enter a valid Canadian postal code.",
       );
+      document.getElementById("waitlist-postal")?.focus();
       return;
     }
 
@@ -86,6 +105,7 @@ export function WaitlistForm() {
       }
 
       setStatus("success");
+      setErrorField(null);
       setMessage(payload.message || "You are on the Chorezy waitlist.");
       setValues(initialValues);
     } catch (error) {
@@ -117,12 +137,15 @@ export function WaitlistForm() {
       <div className="field field--wide">
         <label htmlFor="waitlist-email">Email address</label>
         <input
+          aria-describedby={errorField === "email" ? "waitlist-error" : undefined}
+          aria-invalid={errorField === "email"}
           autoComplete="email"
           id="waitlist-email"
           name="email"
           onChange={(event) => setValues({ ...values, email: event.target.value })}
-          placeholder="you@example.com"
+          placeholder="name@example.com"
           required
+          spellCheck={false}
           type="email"
           value={values.email}
         />
@@ -131,6 +154,8 @@ export function WaitlistForm() {
       <div className="field field--wide">
         <label htmlFor="waitlist-role">How would you use Chorezy?</label>
         <select
+          aria-describedby={errorField === "role" ? "waitlist-error" : undefined}
+          aria-invalid={errorField === "role"}
           id="waitlist-role"
           name="role"
           onChange={(event) => setValues({ ...values, role: event.target.value })}
@@ -160,6 +185,8 @@ export function WaitlistForm() {
       <div className="field">
         <label htmlFor="waitlist-postal">{postalLabel}</label>
         <input
+          aria-describedby={errorField === "postalCode" ? "waitlist-error" : undefined}
+          aria-invalid={errorField === "postalCode"}
           autoComplete="postal-code"
           id="waitlist-postal"
           inputMode={values.country === "US" ? "numeric" : "text"}
@@ -184,11 +211,11 @@ export function WaitlistForm() {
       </div>
 
       {message && (
-        <p className="form-message" role="alert">{message}</p>
+        <p className="form-message" id="waitlist-error" role="alert">{message}</p>
       )}
 
       <button className="button button--primary field--wide" disabled={status === "submitting"} type="submit">
-        {status === "submitting" ? "Saving your place..." : "Join the North America waitlist"}
+        {status === "submitting" ? "Saving your place…" : "Join the North America waitlist"}
         {status !== "submitting" && <Icon name="arrow" />}
       </button>
 

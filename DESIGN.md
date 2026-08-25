@@ -6,22 +6,40 @@ Chorezy is a neighborhood chore marketplace preparing to launch in the United St
 
 ## Visual character
 
-- Trustworthy, optimistic, and community-oriented without looking childish.
-- Use the existing multicolor Chorezy mark as the energetic brand moment.
-- Keep page surfaces calm: warm off-white canvas, deep navy text, blue primary actions, green safety accents, and restrained orange highlights.
-- Avoid fake testimonials, launch counts, ratings, urgency, or location claims.
+- Reading: a premium consumer marketplace landing page for households, helpers,
+  guardians, and local businesses, with a joyful neighborhood-energy language.
+- Design dials: variance 8, motion 4, density 3. The page is asymmetric and
+  expressive, but motion stays lightweight and purposeful.
+- Use a fixed light theme with crisp white and cool-gray surfaces. Electric
+  cobalt is the dominant action color; hot pink and orange appear only as
+  disciplined accents drawn from the existing multicolor Chorezy mark.
+- Use original human-centered lifestyle photography rather than fake product
+  dashboards or generic div-based screenshots.
+- Pair Bricolage Grotesque display type with DM Sans body type through
+  `next/font`.
+- Avoid fake testimonials, launch counts, ratings, urgency, location claims,
+  generic purple mesh gradients, and three identical feature cards.
 
 ## Core tokens
 
-- Canvas: `#fffaf4`
-- Ink: `#10233f`
-- Secondary text: `#52647d`
-- Primary: `#175cd3`
-- Primary dark: `#0d429e`
-- Safety green: `#14845f`
-- Accent orange: `#f5663b`
+- Canvas: `#f8f9ff`
+- Ink: `#15213b`
+- Secondary text: `#53607a`
+- Primary: `#075dff`
+- Primary dark: `#0044c4`
+- Safety green: `#087d5b`
+- Accent pink: `#e90067`
+- Accent orange: `#f45d00`
 - Surface: `#ffffff`
-- Border: `rgba(16, 35, 63, 0.12)`
+- Border: `rgba(21, 33, 59, 0.14)`
+
+## Shape and motion
+
+- Cards use an 18px radius, form controls use 10px, and action buttons use a
+  pill shape.
+- Animate only opacity and transforms. Hero entry motion establishes hierarchy;
+  hover and active states provide feedback.
+- Every animation must collapse under `prefers-reduced-motion`.
 
 ## Interaction and accessibility
 
