@@ -267,7 +267,14 @@ export default function HomePage() {
               <h2 id="region-heading">One country.<br />A focused launch.</h2>
             </div>
             <div className="region-countries" aria-label="Launch country">
-              <article><strong>US</strong><span>United States</span></article>
+              <article>
+                <div className="region-country__label"><strong>US</strong><span>United States</span></div>
+                <svg aria-hidden="true" className="region-country__map" viewBox="0 0 1000 600">
+                  <path d="M80 92 140 80 190 91 240 74 290 84 340 77 390 89 445 81 500 93 548 88 588 105 630 100 660 115 700 105 725 125 760 118 790 140 825 145 842 166 875 170 890 195 918 203 930 225 905 245 887 236 870 270 852 292 820 305 790 332 760 350 744 382 775 391 792 420 786 464 800 500 822 485 832 428 812 380 820 348 786 358 748 350 718 362 690 350 660 368 630 356 595 382 560 374 535 392 500 380 465 402 430 390 395 410 360 394 325 405 290 384 250 390 220 364 185 360 166 330 138 322 128 290 104 270 112 235 90 212 98 180 82 156Z" />
+                  <path d="m166 458 47-24 45 13-9 33-54 21-36-17Z" />
+                  <circle cx="307" cy="497" r="8" /><circle cx="337" cy="508" r="7" /><circle cx="366" cy="514" r="6" /><circle cx="394" cy="519" r="5" />
+                </svg>
+              </article>
             </div>
             <p className="region-note">The current waitlist accepts U.S. ZIP codes only. Chorezy is starting with one market so local demand, helpers, and support can grow together.</p>
           </div>

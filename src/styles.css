@@ -227,10 +227,12 @@ section[id], h2[id] { scroll-margin-top: 96px; }
 .region-layout { display: grid; grid-template-columns: 1fr 0.66fr; grid-template-areas: "title countries" "note countries"; gap: 40px 80px; align-items: end; }
 .region-title { grid-area: title; }
 .region-countries { grid-area: countries; display: grid; grid-template-columns: 1fr; gap: 14px; }
-.region-countries article { min-height: 300px; display: flex; flex-direction: column; justify-content: space-between; padding: 28px; border-radius: var(--radius-card); }
+.region-countries article { position: relative; min-height: 300px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; padding: 28px; border-radius: var(--radius-card); }
 .region-countries article:first-child { color: #fff; background: var(--gradient-chore-poster); }
+.region-country__label { position: relative; z-index: 1; min-height: 244px; display: flex; flex-direction: column; justify-content: space-between; }
 .region-countries strong { font-family: var(--font-display), sans-serif; font-size: clamp(4rem, 8vw, 7rem); line-height: 0.8; letter-spacing: -0.08em; }
 .region-countries span { font-weight: 800; }
+.region-country__map { position: absolute; width: min(78%, 430px); height: auto; top: 50%; right: -6%; fill: rgba(255, 255, 255, 0.16); stroke: rgba(255, 255, 255, 0.42); stroke-width: 7; stroke-linejoin: round; transform: translateY(-50%); }
 .region-note { grid-area: note; max-width: 650px; margin: 0; color: var(--ink-soft); font-size: 1.04rem; line-height: 1.7; }
 
 .faq-section { border-top: 1px solid var(--line); }
@@ -458,6 +460,8 @@ section[id], h2[id] { scroll-margin-top: 96px; }
   .discovery-cta .button { width: 100%; }
   .region-countries { grid-template-columns: 1fr; }
   .region-countries article { min-height: 220px; }
+  .region-country__label { min-height: 164px; }
+  .region-country__map { width: min(76%, 340px); right: -14%; }
   .faq-list summary { min-height: 76px; padding: 0 16px; }
   .faq-list details p { margin: -2px 54px 24px 16px; }
   .waitlist-section { padding-inline: 0; }
