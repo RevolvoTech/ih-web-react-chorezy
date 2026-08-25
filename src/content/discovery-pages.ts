@@ -11,6 +11,21 @@ export type DiscoveryPageData = {
 };
 
 export const chorePages = {
+  cleaning: {
+    slug: "cleaning",
+    path: "/chores/cleaning/",
+    eyebrow: "Cleaning chores",
+    title: "Find local help for the cleaning that keeps piling up.",
+    seoTitle: "Local Cleaning Help & Flexible Cleaning Jobs | Chorezy",
+    description: "Join the Chorezy U.S. waitlist for nearby cleaning help and flexible chores such as dusting, sweeping, organizing, and deep cleaning.",
+    intro: "Chorezy is being built to help busy households turn a vague cleaning list into a clearly scoped chore—and help eligible people nearby choose work that fits their time and skills.",
+    highlights: ["Routine and one-time cleaning", "Scope, rooms, timing, and checklist upfront", "Nearby opportunities for eligible helpers"],
+    sections: [
+      ["Describe the result you need", "Posters can list the rooms, surfaces, supplies, priorities, timing, photos, and budget so a helper can understand the job before making an offer."],
+      ["Choose cleaning work that fits", "Eligible helpers can review the scope and decide whether the location, schedule, and expectations are a good match—without automatic assignment."],
+      ["Keep the handoff organized", "In-app details, communication, progress updates, completion proof, payment, and reviews are being designed to stay connected to the chore."],
+    ],
+  },
   "yard-care": {
     slug: "yard-care",
     path: "/chores/yard-care/",
@@ -56,6 +71,36 @@ export const chorePages = {
       ["Know what is happening", "Arrival and progress updates are being designed to give posters a clearer view from acceptance through completion."],
     ],
   },
+  "food-and-groceries": {
+    slug: "food-and-groceries",
+    path: "/chores/food-and-groceries/",
+    eyebrow: "Food and grocery chores",
+    title: "Make grocery runs and everyday food prep easier to arrange.",
+    seoTitle: "Grocery Shopping & Meal Prep Help Nearby | Chorezy",
+    description: "Join the Chorezy U.S. waitlist for local grocery shopping, pickup, meal-prep, and everyday kitchen-help chores.",
+    intro: "For working parents and busy households, food tasks can consume the time between work, school, and home. Chorezy is being built to make eligible grocery and kitchen help easier to describe and coordinate.",
+    highlights: ["Grocery shopping and pickup", "Simple meal-prep and kitchen help", "Lists, timing, substitutions, and budget in one place"],
+    sections: [
+      ["Start with a useful list", "Posters can share the items, store or pickup location, timing, substitutions, access notes, kitchen scope, and budget before selecting a helper."],
+      ["Know what the chore involves", "Eligible helpers can review the details before offering, including whether transportation, shopping, or basic food preparation is part of the request."],
+      ["Keep updates with the task", "Communication, checklist progress, arrival and completion updates, receipts, and payment steps are part of the planned Chorezy flow."],
+    ],
+  },
+  "tech-help": {
+    slug: "tech-help",
+    path: "/chores/tech-help/",
+    eyebrow: "Local tech help",
+    title: "Get nearby help with everyday devices and digital setup.",
+    seoTitle: "Local Tech Help & Flexible Tech Chores | Chorezy",
+    description: "Join the Chorezy U.S. waitlist for nearby help with device setup, apps, printers, Wi-Fi, and eligible smart-home chores.",
+    intro: "Small technology problems can block an entire afternoon. Chorezy is being built to connect clear, eligible tech chores with nearby helpers who understand the request and choose to offer their time.",
+    highlights: ["Phones, computers, printers, and apps", "Wi-Fi and eligible smart-home setup", "Clear device and access expectations"],
+    sections: [
+      ["Explain the problem before anyone arrives", "Posters can describe the device, goal, symptoms, timing, photos, and what has already been tried so helpers can judge whether the chore fits their experience."],
+      ["Protect private information", "A tech-help chore should not require sharing passwords, verification codes, banking details, or unrestricted account access. Chorezy’s safety guidance will keep those boundaries visible."],
+      ["Choose a suitable local helper", "Eligible helpers can review the task and make an offer when the issue matches their skills, with communication and completion records kept in the chore flow."],
+    ],
+  },
   "home-help": {
     slug: "home-help",
     path: "/chores/home-help/",
@@ -69,6 +114,21 @@ export const chorePages = {
       ["Post a chore with useful context", "Add the scope, checklist, photos or voice context, timing, location, and budget so helpers can assess the work before making an offer."],
       ["Compare before you choose", "Posters remain in control of which eligible helper they select. Chorezy is not designed to assign a stranger automatically."],
       ["Keep a completion record", "Task communication, completion proof, reviews, payments, and dispute support are being designed into a single chore flow."],
+    ],
+  },
+  assembly: {
+    slug: "assembly",
+    path: "/chores/assembly/",
+    eyebrow: "Assembly chores",
+    title: "Turn boxed-up projects into clearly scoped local chores.",
+    seoTitle: "Furniture Assembly Help & Local Assembly Jobs | Chorezy",
+    description: "Join the Chorezy U.S. waitlist for nearby furniture assembly, DIY kit setup, shelving, and other eligible household assembly chores.",
+    intro: "Chorezy is being built for practical assembly jobs that need clear instructions, the right tools, and a realistic amount of time—not a confusing chain of messages.",
+    highlights: ["Furniture and flat-pack assembly", "DIY kits and eligible household setup", "Photos, instructions, tools, and scope upfront"],
+    sections: [
+      ["Show what is in the box", "Posters can add the product, instructions, photos, parts, available tools, workspace, timing, and budget so the scope is visible before offers arrive."],
+      ["Match the chore to the helper", "Eligible helpers can decide whether the project suits their experience and tools. Electrical, structural, licensed, or otherwise restricted work should not be disguised as simple assembly."],
+      ["Confirm the finished result", "Task communication, checklist progress, completion photos, payment, reviews, and support are being designed to remain attached to the chore."],
     ],
   },
 } satisfies Record<string, DiscoveryPageData>;

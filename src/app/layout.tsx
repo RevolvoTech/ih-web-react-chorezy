@@ -72,7 +72,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en" data-scroll-behavior="smooth">
+    <html lang="en-US" data-scroll-behavior="smooth">
       <body className={`${displayFont.variable} ${bodyFont.variable}`}>
         {children}
         <Analytics />

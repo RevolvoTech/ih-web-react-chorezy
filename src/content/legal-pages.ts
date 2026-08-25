@@ -20,7 +20,7 @@ export const legalPages = {
       ["What we collect", "The waitlist collects your email address, intended role, and ZIP code. We may also store a referral code and basic technical records needed to secure the form."],
       ["Why we collect it", "We use the information to understand regional demand, plan the United States rollout, prevent abuse, and send relevant launch updates."],
       ["How it is shared", "We use service providers that support website hosting, database storage, security, and email delivery. We do not sell waitlist information."],
-      ["Your choices", "You can unsubscribe from launch emails at any time. To request access or deletion, email privacy@chorezy.com from the address you used to join."],
+      ["Your choices", "You can unsubscribe from launch emails at any time. To request access or deletion, email chorezy@revolvo.tech from the address you used to join."],
     ],
   },
   "/terms": {

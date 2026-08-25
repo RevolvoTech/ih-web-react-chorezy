@@ -13,7 +13,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { audience } = await params;
   const page = earnPages[audience as keyof typeof earnPages];
   if (!page) return {};
-  return { title: page.seoTitle, description: page.description, alternates: { canonical: page.path } };
+  return {
+    title: page.seoTitle,
+    description: page.description,
+    alternates: { canonical: page.path },
+    openGraph: { title: page.seoTitle, description: page.description, url: page.path, type: "website", siteName: "Chorezy", locale: "en_US" },
+    twitter: { card: "summary_large_image", title: page.seoTitle, description: page.description },
+  };
 }
 
 export default async function EarnPage({ params }: Props) {

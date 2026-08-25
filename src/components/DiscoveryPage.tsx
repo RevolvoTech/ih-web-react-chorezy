@@ -4,8 +4,35 @@ import type { DiscoveryPageData } from "@/content/discovery-pages";
 import { Icon } from "./Icons";
 
 export function DiscoveryPage({ page }: { page: DiscoveryPageData }) {
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: page.seoTitle,
+      description: page.description,
+      url: `https://chorezy.com${page.path}`,
+      isPartOf: { "@type": "WebSite", name: "Chorezy", url: "https://chorezy.com/" },
+      inLanguage: "en-US",
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://chorezy.com/" },
+        { "@type": "ListItem", position: 2, name: page.eyebrow, item: `https://chorezy.com${page.path}` },
+      ],
+    },
+  ];
+
   return (
     <>
+      {structuredData.map((data) => (
+        <script
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }}
+          key={data["@type"]}
+          type="application/ld+json"
+        />
+      ))}
       <a className="skip-link" href="#main-content">Skip to content</a>
       <Navigation />
       <main className="discovery-main" id="main-content">

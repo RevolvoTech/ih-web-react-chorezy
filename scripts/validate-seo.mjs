@@ -26,6 +26,41 @@ for (const required of [
   if (!home.includes(required)) throw new Error(`Missing SEO requirement: ${required}`);
 }
 
+const discoveryRoutes = [
+  "/chores/cleaning/",
+  "/chores/yard-care/",
+  "/chores/pet-care/",
+  "/chores/errands/",
+  "/chores/food-and-groceries/",
+  "/chores/tech-help/",
+  "/chores/home-help/",
+  "/chores/assembly/",
+  "/earn/young-helpers/",
+  "/earn/adult-helpers/",
+  "/help/working-families/",
+];
+
+for (const route of discoveryRoutes) {
+  const outputPath = `.next/server/app${route.slice(0, -1)}.html`;
+  const content = await readFile(path.resolve(outputPath), "utf8");
+  const canonical = `https://chorezy.com${route}`;
+  for (const required of [
+    `<link rel="canonical" href="${canonical}"`,
+    `property="og:url" content="${canonical}"`,
+    'name="description"',
+    'type="application/ld+json"',
+    '"@type":"BreadcrumbList"',
+  ]) {
+    if (!content.includes(required)) throw new Error(`Missing ${required} in ${route}`);
+  }
+}
+
+const sitemap = await readFile(path.resolve(".next/server/app/sitemap.xml.body"), "utf8");
+for (const route of discoveryRoutes) {
+  const canonical = `https://chorezy.com${route}`;
+  if (!sitemap.includes(`<loc>${canonical}</loc>`)) throw new Error(`Sitemap is missing ${canonical}`);
+}
+
 const appPathManifest = await readFile(path.resolve(".next/server/app-paths-manifest.json"), "utf8");
 for (const route of ["/page", "/safety/page", "/privacy/page", "/terms/page", "/robots.txt/route", "/sitemap.xml/route"]) {
   if (!appPathManifest.includes(`\"${route}\"`)) throw new Error(`Missing generated route: ${route}`);

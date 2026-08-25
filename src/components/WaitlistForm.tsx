@@ -41,7 +41,12 @@ function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
-export function WaitlistForm() {
+type WaitlistFormProps = {
+  idPrefix?: string;
+  variant?: "default" | "hero";
+};
+
+export function WaitlistForm({ idPrefix = "waitlist", variant = "default" }: WaitlistFormProps) {
   const [values, setValues] = useState<FormValues>(initialValues);
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
@@ -49,6 +54,15 @@ export function WaitlistForm() {
   const [successData, setSuccessData] = useState<SuccessData | null>(null);
   const [copyLabel, setCopyLabel] = useState("Copy referral link");
   const successRef = useRef<HTMLDivElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const roleRef = useRef<HTMLSelectElement>(null);
+  const postalRef = useRef<HTMLInputElement>(null);
+  const isHero = variant === "hero";
+  const emailId = `${idPrefix}-email`;
+  const roleId = `${idPrefix}-role`;
+  const postalId = `${idPrefix}-postal`;
+  const websiteId = `${idPrefix}-website`;
+  const errorId = `${idPrefix}-error`;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -59,7 +73,7 @@ export function WaitlistForm() {
       setStatus("error");
       setErrorField("email");
       setMessage("Enter a valid email address.");
-      document.getElementById("waitlist-email")?.focus();
+      emailRef.current?.focus();
       return;
     }
 
@@ -67,7 +81,7 @@ export function WaitlistForm() {
       setStatus("error");
       setErrorField("role");
       setMessage("Choose how you plan to use Chorezy.");
-      document.getElementById("waitlist-role")?.focus();
+      roleRef.current?.focus();
       return;
     }
 
@@ -75,7 +89,7 @@ export function WaitlistForm() {
       setStatus("error");
       setErrorField("postalCode");
       setMessage("Enter a valid U.S. ZIP code.");
-      document.getElementById("waitlist-postal")?.focus();
+      postalRef.current?.focus();
       return;
     }
 
@@ -155,7 +169,7 @@ export function WaitlistForm() {
     const completedReferrals = Math.min(successData.referralCount, successData.rewardThreshold);
     const progress = `${completedReferrals} / ${successData.rewardThreshold}`;
     return (
-      <div className="waitlist-success" ref={successRef} role="status" tabIndex={-1}>
+      <div className={`waitlist-success${isHero ? " waitlist-success--hero" : ""}`} ref={successRef} role="status" tabIndex={-1}>
         <span className="waitlist-success__icon"><Icon name="check" size={26} /></span>
         <p className="eyebrow">You&apos;re on the list</p>
         <h3>Refer two friends. Get ${successData.creditAmount} at launch.</h3>
@@ -187,32 +201,34 @@ export function WaitlistForm() {
   }
 
   return (
-    <form className="waitlist-form" onSubmit={handleSubmit} noValidate>
-      <div className="field field--wide">
-        <label htmlFor="waitlist-email">Email address</label>
+    <form className={`waitlist-form${isHero ? " waitlist-form--hero" : ""}`} onSubmit={handleSubmit} noValidate>
+      <div className={`field${isHero ? "" : " field--wide"}`}>
+        <label htmlFor={emailId}>Email address</label>
         <input
-          aria-describedby={errorField === "email" ? "waitlist-error" : undefined}
+          aria-describedby={errorField === "email" ? errorId : undefined}
           aria-invalid={errorField === "email"}
           autoComplete="email"
-          id="waitlist-email"
+          id={emailId}
           name="email"
           onChange={(event) => setValues({ ...values, email: event.target.value })}
           placeholder="name@example.com"
           required
+          ref={emailRef}
           spellCheck={false}
           type="email"
           value={values.email}
         />
       </div>
 
-      <div className="field field--wide">
-        <label htmlFor="waitlist-role">How would you use Chorezy?</label>
+      <div className={`field${isHero ? "" : " field--wide"}`}>
+        <label htmlFor={roleId}>How would you use Chorezy?</label>
         <select
-          aria-describedby={errorField === "role" ? "waitlist-error" : undefined}
+          aria-describedby={errorField === "role" ? errorId : undefined}
           aria-invalid={errorField === "role"}
-          id="waitlist-role"
+          id={roleId}
           name="role"
           onChange={(event) => setValues({ ...values, role: event.target.value })}
+          ref={roleRef}
           required
           value={values.role}
         >
@@ -223,27 +239,28 @@ export function WaitlistForm() {
         </select>
       </div>
 
-      <div className="field field--wide">
-        <label htmlFor="waitlist-postal">ZIP code</label>
+      <div className={`field${isHero ? "" : " field--wide"}`}>
+        <label htmlFor={postalId}>ZIP code</label>
         <input
-          aria-describedby={errorField === "postalCode" ? "waitlist-error" : undefined}
+          aria-describedby={errorField === "postalCode" ? errorId : undefined}
           aria-invalid={errorField === "postalCode"}
           autoComplete="postal-code"
-          id="waitlist-postal"
+          id={postalId}
           inputMode="numeric"
           name="postalCode"
           onChange={(event) => setValues({ ...values, postalCode: event.target.value })}
           placeholder="10001"
+          ref={postalRef}
           required
           value={values.postalCode}
         />
       </div>
 
       <div className="honeypot" aria-hidden="true">
-        <label htmlFor="website">Website</label>
+        <label htmlFor={websiteId}>Website</label>
         <input
           autoComplete="off"
-          id="website"
+          id={websiteId}
           name="website"
           onChange={(event) => setValues({ ...values, website: event.target.value })}
           tabIndex={-1}
@@ -252,10 +269,10 @@ export function WaitlistForm() {
       </div>
 
       {message && (
-        <p className="form-message" id="waitlist-error" role="alert">{message}</p>
+        <p className="form-message" id={errorId} role="alert">{message}</p>
       )}
 
-      <button className="button button--primary field--wide" disabled={status === "submitting"} type="submit">
+      <button className={`button button--primary${isHero ? "" : " field--wide"}`} disabled={status === "submitting"} type="submit">
         {status === "submitting" ? "Saving your place…" : "Join the U.S. waitlist"}
         {status !== "submitting" && <Icon name="arrow" />}
       </button>

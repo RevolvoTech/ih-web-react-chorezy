@@ -23,7 +23,7 @@ Chorezy is a neighborhood chore marketplace preparing to launch in the United St
   that role's context. Reserve the full role spectrum for a rare brand frame,
   never a generic purple mesh. Keep reading surfaces neutral.
 - Marketing category cards mirror the Flutter welcome carousel: solid catalog
-  color, white text and iconography, and a translucent white icon tile.
+  color, white text, and larger centered white iconography without an icon tile.
 - Pair Bricolage Grotesque display type with the app's local Airbnb Cereal
   family through `next/font`. Reserve Bricolage for major display headlines;
   brand text, navigation, buttons, subtitles, card headings, FAQs, forms, and

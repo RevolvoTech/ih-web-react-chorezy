@@ -130,10 +130,7 @@ export default function HomePage() {
               <p className="launch-label"><Icon name="pin" size={18} /> United States launch waitlist</p>
               <h1>Get local help.<span>Earn close to home.</span></h1>
               <p className="hero__lede">A local chore marketplace for households, helpers, families, and businesses across the United States.</p>
-              <div className="hero__actions">
-                <a className="button button--primary" href="#waitlist">Join the waitlist <Icon name="arrow" /></a>
-                <a className="text-link" href="#how">How Chorezy will work</a>
-              </div>
+              <WaitlistForm idPrefix="hero-waitlist" variant="hero" />
             </div>
 
             <div className="hero-media">
