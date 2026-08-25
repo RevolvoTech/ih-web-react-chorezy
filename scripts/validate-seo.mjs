@@ -22,6 +22,7 @@ for (const required of [
   'name="description"',
   'property="og:title"',
   'type="application/ld+json"',
+  'name="msvalidate.01" content="33F6A01ACF0E0CE564EE162F12747A4C"',
 ]) {
   if (!home.includes(required)) throw new Error(`Missing SEO requirement: ${required}`);
 }

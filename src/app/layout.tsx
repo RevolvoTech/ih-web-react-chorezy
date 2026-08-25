@@ -37,6 +37,11 @@ export const metadata: Metadata = {
     apple: "/brand/logo-color.png",
   },
   manifest: "/manifest.webmanifest",
+  verification: {
+    other: {
+      "msvalidate.01": "33F6A01ACF0E0CE564EE162F12747A4C",
+    },
+  },
   robots: {
     index: true,
     follow: true,
