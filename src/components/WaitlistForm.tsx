@@ -281,7 +281,7 @@ export function WaitlistForm({ idPrefix = "waitlist", variant = "default" }: Wai
       )}
 
       <button className={`button button--primary${isHero ? "" : " field--wide"}`} disabled={status === "submitting"} type="submit">
-        {status === "submitting" ? "Saving your place…" : isHero ? "Join the waitlist" : "Join the U.S. waitlist"}
+        {status === "submitting" ? "Saving your place…" : "Join the U.S. waitlist"}
         {status !== "submitting" && <Icon name="arrow" />}
       </button>
 
