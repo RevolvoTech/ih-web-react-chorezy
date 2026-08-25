@@ -6,15 +6,7 @@ import { useEffect, useState } from "react";
 import { Brand } from "./components/Brand";
 import { Icon } from "./components/Icons";
 import { WaitlistForm } from "./components/WaitlistForm";
-
-const faqItems = [
-  ["What is Chorezy?", "Chorezy is a neighborhood marketplace being built to connect people and local businesses who need help with young and adult helpers nearby."],
-  ["Where is Chorezy launching?", "The current waitlist is limited to the United States and Canada. Your ZIP or postal code helps us understand where local demand is growing."],
-  ["Who can become a helper?", "Chorezy supports Adult Helpers and Young Helpers. Young Helper access is being designed around guardian involvement and age-appropriate work."],
-  ["What kinds of chores will be available?", "Examples include yard work, pet care, errands, cleaning help, moving assistance, and other local tasks that match a helper's eligibility and skills."],
-  ["Is Chorezy live yet?", "Not publicly. We are preparing the North American launch and inviting people to join the waitlist for location-based updates."],
-  ["Does joining cost anything?", "No. Joining the launch waitlist is free and does not obligate you to use the app."],
-] as const;
+import { faqItems } from "./content/faqs";
 
 const choreTypes = ["Yard care", "Pet care", "Errands", "Home help", "Other"] as const;
 
@@ -48,7 +40,7 @@ export function Navigation() {
         <nav aria-label="Primary navigation" className={open ? "nav nav--open" : "nav"}>
           <Link href="/#how" onClick={() => setOpen(false)}>How it works</Link>
           <Link href="/#safety" onClick={() => setOpen(false)}>Safety</Link>
-          <Link href="/#north-america" onClick={() => setOpen(false)}>North America</Link>
+          <Link href="/#united-states" onClick={() => setOpen(false)}>United States</Link>
           <Link className="button button--nav" href="/#waitlist" onClick={() => setOpen(false)}>Join waitlist</Link>
         </nav>
         <button
@@ -71,18 +63,16 @@ export function Footer() {
       <div className="shell site-footer__grid">
         <div>
           <Brand />
-          <p>Local help is closer than you think. Chorezy is preparing to launch across the United States and Canada.</p>
+          <p>Local help is closer than you think. Chorezy is preparing to launch across the United States.</p>
         </div>
         <nav aria-label="Footer navigation">
           <Link href="/safety/">Safety</Link>
           <Link href="/privacy/">Privacy</Link>
           <Link href="/terms/">Terms</Link>
-          <a href="mailto:hello@chorezy.com">hello@chorezy.com</a>
         </nav>
       </div>
       <div className="shell site-footer__bottom">
         <span>© {new Date().getFullYear()} Chorezy</span>
-        <span>A Revolvo Tech product</span>
       </div>
     </footer>
   );
@@ -97,9 +87,9 @@ export default function HomePage() {
         <section className="hero">
           <div className="shell hero__grid">
             <div className="hero__copy">
-              <p className="launch-label"><Icon name="pin" size={18} /> U.S. + Canada launch waitlist</p>
+              <p className="launch-label"><Icon name="pin" size={18} /> United States launch waitlist</p>
               <h1>Get local help.<span>Earn close to home.</span></h1>
-              <p className="hero__lede">A local chore marketplace for households, helpers, families, and businesses across the U.S. and Canada.</p>
+              <p className="hero__lede">A local chore marketplace for households, helpers, families, and businesses across the United States.</p>
               <div className="hero__actions">
                 <a className="button button--primary" href="#waitlist">Join the waitlist <Icon name="arrow" /></a>
                 <a className="text-link" href="#how">How Chorezy will work</a>
@@ -109,7 +99,7 @@ export default function HomePage() {
             <div className="hero-media">
               <div className="hero-media__frame">
                 <Image
-                  alt="Neighbors gardening together outside a North American home"
+                  alt="Neighbors gardening together outside a United States home"
                   className="hero-media__image"
                   fill
                   priority
@@ -166,7 +156,7 @@ export default function HomePage() {
               <a className="text-link" href="#waitlist">Add your neighborhood <Icon name="arrow" /></a>
             </div>
             <div className="journey-path">
-              <article><span><Icon name="pin" size={24} /></span><div><h3>Share your area</h3><p>Enter a U.S. ZIP code or Canadian postal code.</p></div></article>
+              <article><span><Icon name="pin" size={24} /></span><div><h3>Share your area</h3><p>Enter your U.S. ZIP code.</p></div></article>
               <article><span><Icon name="spark" size={24} /></span><div><h3>Choose your role</h3><p>Tell us if you need help, want to help, support a Young Helper, or represent a business.</p></div></article>
               <article><span><Icon name="mail" size={24} /></span><div><h3>Get the right update</h3><p>We will email you when Chorezy is ready for your area and role.</p></div></article>
             </div>
@@ -188,17 +178,16 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="region-section" id="north-america" aria-labelledby="region-heading">
+        <section className="region-section" id="united-states" aria-labelledby="region-heading">
           <div className="shell region-layout">
             <div className="region-title">
-              <p className="section-kicker">North America first</p>
-              <h2 id="region-heading">Two countries.<br />One focused launch.</h2>
+              <p className="section-kicker">United States first</p>
+              <h2 id="region-heading">One country.<br />A focused launch.</h2>
             </div>
-            <div className="region-countries" aria-label="Launch countries">
+            <div className="region-countries" aria-label="Launch country">
               <article><strong>US</strong><span>United States</span></article>
-              <article><strong>CA</strong><span>Canada</span></article>
             </div>
-            <p className="region-note">The current waitlist accepts U.S. ZIP codes and Canadian postal codes. Signups for other countries are not open yet.</p>
+            <p className="region-note">The current waitlist accepts U.S. ZIP codes only. Chorezy is starting with one market so local demand, helpers, and support can grow together.</p>
           </div>
         </section>
 
@@ -219,7 +208,7 @@ export default function HomePage() {
               <p className="section-kicker">Your neighborhood starts here</p>
               <h2 id="waitlist-heading">Put your area on the Chorezy map.</h2>
               <p>Tell us where you are and how you would use Chorezy. We will send relevant launch updates, not a generic global newsletter.</p>
-              <div className="privacy-note"><Icon name="shield" /><span>We ask for a ZIP or postal code, never your street address.</span></div>
+              <div className="privacy-note"><Icon name="shield" /><span>We ask for a ZIP code, never your street address.</span></div>
             </div>
             <WaitlistForm />
           </div>

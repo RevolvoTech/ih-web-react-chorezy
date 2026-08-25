@@ -4,7 +4,7 @@ type BrandProps = {
 
 export function Brand({ compact = false }: BrandProps) {
   return (
-    <Link className="brand" href="/" aria-label="Chorezy home">
+    <Link className={compact ? "brand brand--compact" : "brand"} href="/" aria-label="Chorezy home">
       <Image
         className="brand__mark"
         src="/brand/logo-color.png"

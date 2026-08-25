@@ -24,7 +24,7 @@ export default function OpenGraphImage() {
           <span>Get local help.</span>
           <span>Earn close to home.</span>
         </div>
-        <div style={{ fontSize: 27, marginTop: 42, opacity: 0.86 }}>Launching across the United States + Canada</div>
+        <div style={{ fontSize: 27, marginTop: 42, opacity: 0.86 }}>Launching across the United States</div>
       </div>
       <div
         style={{

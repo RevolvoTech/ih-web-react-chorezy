@@ -1,11 +1,12 @@
 # Chorezy website
 
-Official public website and North America launch waitlist for [Chorezy](https://chorezy.com).
+Official public website and United States launch waitlist for [Chorezy](https://chorezy.com).
 
 ## What lives here
 
 - Chorezy marketing and waitlist experience
-- United States and Canada postal-code qualification
+- United States ZIP-code qualification
+- Vercel IP-country gate for the United States launch market
 - Safety, privacy, and waitlist-terms pages
 - Legacy verification, reset, and invitation deep-link compatibility
 - Versioned email artwork served from `/email/v1/` for backend templates
@@ -30,7 +31,7 @@ npm run dev
 
 Never commit `.env` or Supabase service-role credentials.
 
-## Netlify environment variables
+## Production environment variables
 
 | Variable | Purpose |
 | --- | --- |
@@ -42,13 +43,15 @@ Never commit `.env` or Supabase service-role credentials.
 
 ## Deployment
 
-1. Import `RevolvoTech/ih-web-react-chorezy` into Netlify.
+1. Import `RevolvoTech/ih-web-react-chorezy` into Vercel.
 2. Set the variables above in the production environment.
-3. Add `chorezy.com` as the primary domain and `www.chorezy.com` as an alias.
-4. Replace the registrar parking records with the DNS records Netlify supplies.
+3. Add `chorezy.com` and `www.chorezy.com` to the production environment.
+4. Add the DNS records Vercel supplies and choose the preferred canonical domain.
 5. Confirm `/api/waitlist`, `/robots.txt`, `/sitemap.xml`, and the four public pages after deployment.
+6. Enable Web Analytics in the Vercel project dashboard.
 
-The root `netlify.toml` runs the Next.js build, redirects `www` to the apex domain, and applies security headers. Netlify deploys the Next.js route handler at `/api/waitlist`.
+Vercel deploys the Next.js route handler at `/api/waitlist` and provides the
+`x-vercel-ip-country` header used by the United States launch gate.
 
 ## Quality checks
 
@@ -62,4 +65,5 @@ Next.js pre-renders the indexed pages and generates the robots and sitemap route
 
 ## Backend domain
 
-The public API is moving from `api.revolvo.tech` to `api.chorezy.com`. DNS must point `api.chorezy.com` to the VPS before Caddy can obtain the TLS certificate. The platform service manifest and application configuration should be updated in the backend/platform repositories as part of that cutover.
+The public API is live at `https://api.chorezy.com`. Caddy routes that domain to
+the Chorezy backend managed by the shared VPS platform repository.

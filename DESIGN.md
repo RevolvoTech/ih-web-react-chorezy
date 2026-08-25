@@ -2,7 +2,7 @@
 
 ## Product and audience
 
-Chorezy is a neighborhood chore marketplace preparing to launch in the United States and Canada. The public site has one primary conversion: a location-qualified waitlist signup. It serves people who need help, Adult Helpers, Young Helpers and their guardians, and local businesses.
+Chorezy is a neighborhood chore marketplace preparing to launch in the United States. The public site has one primary conversion: a location-qualified waitlist signup. It serves people who need help, Adult Helpers, Young Helpers and their guardians, and local businesses.
 
 ## Visual character
 
@@ -15,8 +15,13 @@ Chorezy is a neighborhood chore marketplace preparing to launch in the United St
   disciplined accents drawn from the existing multicolor Chorezy mark.
 - Use original human-centered lifestyle photography rather than fake product
   dashboards or generic div-based screenshots.
+- Reuse the app's branded gradient family for a few expressive moments:
+  `#FFA000 → #FF5533 → #FF3A6B → #8E2DE2 → #226DFF`, with
+  `#00D6D6 → #226DFF → #6F21FF` as the cool wave variant. Keep reading
+  surfaces neutral and avoid applying gradients to every card.
 - Pair Bricolage Grotesque display type with DM Sans body type through
-  `next/font`.
+  `next/font`. Reserve Bricolage for major display headlines; brand text,
+  navigation, buttons, subtitles, card headings, FAQs, and forms use DM Sans.
 - Avoid fake testimonials, launch counts, ratings, urgency, location claims,
   generic purple mesh gradients, and three identical feature cards.
 
@@ -25,7 +30,7 @@ Chorezy is a neighborhood chore marketplace preparing to launch in the United St
 - Canvas: `#f8f9ff`
 - Ink: `#15213b`
 - Secondary text: `#53607a`
-- Primary: `#075dff`
+- Primary: `#226dff`
 - Primary dark: `#0044c4`
 - Safety green: `#087d5b`
 - Accent pink: `#e90067`
@@ -51,7 +56,7 @@ Chorezy is a neighborhood chore marketplace preparing to launch in the United St
 
 ## Content and SEO
 
-- Say clearly that launch coverage and waitlist eligibility are limited to the United States and Canada.
+- Say clearly that launch coverage, site access, and waitlist eligibility are limited to the United States.
 - Use “being built” or “preparing to launch” for features that are not publicly released.
 - Canonical URLs live on `https://chorezy.com`.
 - Auth, reset, verification, and invitation compatibility routes are `noindex`.

@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 
 const REFERRAL_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const ALLOWED_ROLES = new Set(["chore-poster", "adult-helper", "young-helper", "guardian", "business"]);
-const ALLOWED_COUNTRIES = new Set(["US", "CA"]);
 const PRODUCTION_ORIGINS = new Set(["https://chorezy.com", "https://www.chorezy.com"]);
 
 function json(message: string, status = 200) {
@@ -21,10 +20,8 @@ function referralCode(email: string, salt: string) {
   return value;
 }
 
-function validPostalCode(country: string, value: string) {
-  return country === "US"
-    ? /^\d{5}(?:-\d{4})?$/.test(value)
-    : /^[A-Z]\d[A-Z][ -]?\d[A-Z]\d$/.test(value);
+function validPostalCode(value: string) {
+  return /^\d{5}(?:-\d{4})?$/.test(value);
 }
 
 export async function POST(request: Request) {
@@ -61,8 +58,8 @@ export async function POST(request: Request) {
     return json("Enter a valid email address.", 400);
   }
   if (!ALLOWED_ROLES.has(role)) return json("Choose how you plan to use Chorezy.", 400);
-  if (!ALLOWED_COUNTRIES.has(country) || !validPostalCode(country, postalCode)) {
-    return json("Enter a valid U.S. ZIP code or Canadian postal code.", 400);
+  if (country !== "US" || !validPostalCode(postalCode)) {
+    return json("Enter a valid U.S. ZIP code.", 400);
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey, {
@@ -80,7 +77,7 @@ export async function POST(request: Request) {
     location_source: "manual",
     metadata: {
       brand: "Chorezy",
-      market: "north_america",
+      market: "united_states",
       source_domain: "chorezy.com",
       submitted_at: new Date().toISOString(),
     },

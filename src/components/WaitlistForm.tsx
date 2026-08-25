@@ -1,14 +1,12 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Icon } from "./Icons";
 
-type Country = "US" | "CA";
 type FormStatus = "idle" | "submitting" | "success" | "error";
 type ErrorField = "email" | "role" | "postalCode" | null;
 
 type FormValues = {
   email: string;
   role: string;
-  country: Country;
   postalCode: string;
   website: string;
 };
@@ -16,7 +14,6 @@ type FormValues = {
 const initialValues: FormValues = {
   email: "",
   role: "",
-  country: "US",
   postalCode: "",
   website: "",
 };
@@ -29,11 +26,8 @@ const roleOptions = [
   ["business", "I represent a local business"],
 ] as const;
 
-function isValidPostalCode(country: Country, value: string) {
-  const normalized = value.trim().toUpperCase();
-  return country === "US"
-    ? /^\d{5}(?:-\d{4})?$/.test(normalized)
-    : /^[A-Z]\d[A-Z][ -]?\d[A-Z]\d$/.test(normalized);
+function isValidPostalCode(value: string) {
+  return /^\d{5}(?:-\d{4})?$/.test(value.trim());
 }
 
 function isValidEmail(value: string) {
@@ -45,11 +39,6 @@ export function WaitlistForm() {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
   const [errorField, setErrorField] = useState<ErrorField>(null);
-
-  const postalLabel = useMemo(
-    () => (values.country === "US" ? "ZIP code" : "Postal code"),
-    [values.country],
-  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -72,14 +61,10 @@ export function WaitlistForm() {
       return;
     }
 
-    if (!isValidPostalCode(values.country, values.postalCode)) {
+    if (!isValidPostalCode(values.postalCode)) {
       setStatus("error");
       setErrorField("postalCode");
-      setMessage(
-        values.country === "US"
-          ? "Enter a valid U.S. ZIP code."
-          : "Enter a valid Canadian postal code.",
-      );
+      setMessage("Enter a valid U.S. ZIP code.");
       document.getElementById("waitlist-postal")?.focus();
       return;
     }
@@ -93,6 +78,7 @@ export function WaitlistForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...values,
+          country: "US",
           email: values.email.trim(),
           postalCode: values.postalCode.trim().toUpperCase(),
           referral,
@@ -169,30 +155,17 @@ export function WaitlistForm() {
         </select>
       </div>
 
-      <div className="field">
-        <label htmlFor="waitlist-country">Country</label>
-        <select
-          id="waitlist-country"
-          name="country"
-          onChange={(event) => setValues({ ...values, country: event.target.value as Country, postalCode: "" })}
-          value={values.country}
-        >
-          <option value="US">United States</option>
-          <option value="CA">Canada</option>
-        </select>
-      </div>
-
-      <div className="field">
-        <label htmlFor="waitlist-postal">{postalLabel}</label>
+      <div className="field field--wide">
+        <label htmlFor="waitlist-postal">ZIP code</label>
         <input
           aria-describedby={errorField === "postalCode" ? "waitlist-error" : undefined}
           aria-invalid={errorField === "postalCode"}
           autoComplete="postal-code"
           id="waitlist-postal"
-          inputMode={values.country === "US" ? "numeric" : "text"}
+          inputMode="numeric"
           name="postalCode"
           onChange={(event) => setValues({ ...values, postalCode: event.target.value })}
-          placeholder={values.country === "US" ? "10001" : "M5V 2T6"}
+          placeholder="10001"
           required
           value={values.postalCode}
         />
@@ -215,12 +188,12 @@ export function WaitlistForm() {
       )}
 
       <button className="button button--primary field--wide" disabled={status === "submitting"} type="submit">
-        {status === "submitting" ? "Saving your place…" : "Join the North America waitlist"}
+        {status === "submitting" ? "Saving your place…" : "Join the U.S. waitlist"}
         {status !== "submitting" && <Icon name="arrow" />}
       </button>
 
       <p className="form-note field--wide">
-        U.S. and Canadian locations only. By joining, you agree to receive launch updates. Unsubscribe anytime.
+        United States locations only. By joining, you agree to receive launch updates. Unsubscribe anytime.
       </p>
     </form>
   );

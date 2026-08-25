@@ -1,7 +1,7 @@
 {
   "name": "Chorezy",
   "short_name": "Chorezy",
-  "description": "Local chores and trusted neighborhood helpers across the United States and Canada.",
+  "description": "Local chores and trusted neighborhood helpers across the United States.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fffaf4",

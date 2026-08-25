@@ -13,26 +13,25 @@ export const legalPages = {
   },
   "/privacy": {
     title: "Chorezy Privacy Notice",
-    description: "A plain-language privacy notice for the Chorezy North America launch waitlist.",
+    description: "A plain-language privacy notice for the Chorezy United States launch waitlist.",
     eyebrow: "Privacy notice",
     intro: "This notice covers information submitted through the Chorezy launch waitlist. It is not the final in-app privacy policy for the public marketplace.",
     sections: [
-      ["What we collect", "The waitlist collects your email address, intended role, country, and ZIP or postal code. We may also store a referral code and basic technical records needed to secure the form."],
-      ["Why we collect it", "We use the information to understand regional demand, plan the United States and Canada rollout, prevent abuse, and send relevant launch updates."],
+      ["What we collect", "The waitlist collects your email address, intended role, and ZIP code. We may also store a referral code and basic technical records needed to secure the form."],
+      ["Why we collect it", "We use the information to understand regional demand, plan the United States rollout, prevent abuse, and send relevant launch updates."],
       ["How it is shared", "We use service providers that support website hosting, database storage, security, and email delivery. We do not sell waitlist information."],
       ["Your choices", "You can unsubscribe from launch emails at any time. To request access or deletion, email privacy@chorezy.com from the address you used to join."],
     ],
   },
   "/terms": {
     title: "Chorezy Waitlist Terms",
-    description: "Terms for joining the Chorezy North America launch waitlist.",
+    description: "Terms for joining the Chorezy United States launch waitlist.",
     eyebrow: "Waitlist terms",
     intro: "Joining the Chorezy waitlist expresses interest in the product. It does not create a marketplace account, guarantee launch availability, or reserve paid services.",
     sections: [
-      ["Eligibility", "The current waitlist is intended for people and businesses located in the United States or Canada. Young people should join with the knowledge of a parent or guardian."],
+      ["Eligibility", "The current waitlist is intended for people and businesses located in the United States. Young people should join with the knowledge of a parent or guardian."],
       ["Launch communications", "By joining, you agree to receive Chorezy launch and availability updates. You can unsubscribe through any marketing email."],
       ["No guarantee of availability", "Launch timing, supported locations, product features, and eligibility requirements may change as testing and regional rollout continue."],
-      ["Contact", "Questions about these waitlist terms can be sent to hello@chorezy.com."],
     ],
   },
 } as const;

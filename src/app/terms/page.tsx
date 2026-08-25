@@ -3,7 +3,7 @@ import { LegalPage } from "@/components/LegalPage";
 import { legalPages } from "@/content/legal-pages";
 
 export const metadata: Metadata = {
-  title: "Chorezy Waitlist Terms | United States and Canada",
+  title: "Chorezy Waitlist Terms | United States",
   description: legalPages["/terms"].description,
   alternates: { canonical: "/terms/" },
 };
