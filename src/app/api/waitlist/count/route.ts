@@ -17,7 +17,7 @@ export async function GET() {
     auth: { autoRefreshToken: false, persistSession: false },
   });
   const { count, error } = await supabase
-    .from("choreify_waitlist")
+    .from("chorezy_waitlist")
     .select("id", { count: "exact", head: true })
     .eq("country", "US");
 

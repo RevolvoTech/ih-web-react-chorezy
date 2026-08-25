@@ -31,7 +31,15 @@ export function WaitlistCount({ className = "" }: WaitlistCountProps) {
     }
 
     void loadCount();
-    return () => controller.abort();
+    const handleJoined = (event: Event) => {
+      const detail = (event as CustomEvent<{ created?: boolean }>).detail;
+      if (detail?.created) setCount((current) => current === null ? 1 : current + 1);
+    };
+    window.addEventListener("chorezy:waitlist-joined", handleJoined);
+    return () => {
+      controller.abort();
+      window.removeEventListener("chorezy:waitlist-joined", handleJoined);
+    };
   }, []);
 
   if (count === null) {

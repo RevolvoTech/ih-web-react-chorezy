@@ -5,6 +5,7 @@ import {
   HandCoinsIcon,
   HouseLineIcon,
   ListIcon,
+  LinkSimpleIcon,
   MapPinIcon,
   ShieldCheckIcon,
   SparkleIcon,
@@ -13,7 +14,7 @@ import {
   XIcon,
 } from "@phosphor-icons/react/ssr";
 
-type IconName = "check" | "shield" | "pin" | "spark" | "arrow" | "menu" | "close" | "house" | "earn" | "family" | "store" | "mail";
+type IconName = "check" | "shield" | "pin" | "spark" | "arrow" | "menu" | "close" | "house" | "earn" | "family" | "store" | "mail" | "link";
 
 type IconProps = {
   name: IconName;
@@ -33,6 +34,7 @@ const icons = {
   family: UsersThreeIcon,
   store: StorefrontIcon,
   mail: EnvelopeSimpleIcon,
+  link: LinkSimpleIcon,
 } satisfies Record<IconName, typeof CheckIcon>;
 
 export function Icon({ name, size = 20 }: IconProps) {

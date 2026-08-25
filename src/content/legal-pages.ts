@@ -7,7 +7,7 @@ export const legalPages = {
     sections: [
       ["Clear helper types", "Young Helpers and Adult Helpers have different eligibility needs. Chorezy is designed to keep those differences visible throughout discovery and task participation."],
       ["Guardian involvement", "Young Helper participation is designed around guardian visibility and approval controls appropriate to the account and task."],
-      ["Account and task controls", "Verification, task eligibility, reporting, and emergency-support tooling are part of the launch architecture. Exact availability may vary during testing and rollout."],
+      ["Account and task controls", "Verification, task eligibility, reporting, and emergency-support tooling are part of the launch architecture. The active-chore flow under testing supports police or safety, medical, and fire requests through an emergency-response integration, with a direct 911 option. Exact availability may vary during testing and rollout. Call 911 in immediate danger."],
       ["Protected communication and payment flows", "Keeping task communication and payment activity within the product creates a clearer record and supports safer issue resolution."],
     ],
   },
@@ -31,6 +31,7 @@ export const legalPages = {
     sections: [
       ["Eligibility", "The current waitlist is intended for people and businesses located in the United States. Young people should join with the knowledge of a parent or guardian."],
       ["Launch communications", "By joining, you agree to receive Chorezy launch and availability updates. You can unsubscribe through any marketing email."],
+      ["Referral credit", "A waitlist member may be eligible for $5 in Chorezy launch credit after two distinct people join through that member's personal referral link and the member creates an eligible Chorezy account at launch. Duplicate, fraudulent, self-referred, ineligible, or deleted entries do not qualify. Credit is promotional, non-transferable, has no cash value, and may be subject to launch-area and account requirements. Chorezy may correct or end the promotion before launch if needed to prevent abuse or comply with law."],
       ["No guarantee of availability", "Launch timing, supported locations, product features, and eligibility requirements may change as testing and regional rollout continue."],
     ],
   },

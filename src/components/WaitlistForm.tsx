@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { Icon } from "./Icons";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
@@ -9,6 +9,13 @@ type FormValues = {
   role: string;
   postalCode: string;
   website: string;
+};
+
+type SuccessData = {
+  referralCode: string;
+  referralCount: number;
+  rewardThreshold: number;
+  creditAmount: number;
 };
 
 const initialValues: FormValues = {
@@ -39,6 +46,9 @@ export function WaitlistForm() {
   const [status, setStatus] = useState<FormStatus>("idle");
   const [message, setMessage] = useState("");
   const [errorField, setErrorField] = useState<ErrorField>(null);
+  const [successData, setSuccessData] = useState<SuccessData | null>(null);
+  const [copyLabel, setCopyLabel] = useState("Copy referral link");
+  const successRef = useRef<HTMLDivElement>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -84,7 +94,14 @@ export function WaitlistForm() {
           referral,
         }),
       });
-      const payload = (await response.json()) as { message?: string };
+      const payload = (await response.json()) as {
+        message?: string;
+        referralCode?: string;
+        referralCount?: number;
+        rewardThreshold?: number;
+        creditAmount?: number;
+        created?: boolean;
+      };
 
       if (!response.ok) {
         throw new Error(payload.message || "We could not save your place right now.");
@@ -93,7 +110,17 @@ export function WaitlistForm() {
       setStatus("success");
       setErrorField(null);
       setMessage(payload.message || "You are on the Chorezy waitlist.");
+      setSuccessData({
+        referralCode: payload.referralCode || "",
+        referralCount: payload.referralCount ?? 0,
+        rewardThreshold: payload.rewardThreshold ?? 2,
+        creditAmount: payload.creditAmount ?? 5,
+      });
+      window.dispatchEvent(new CustomEvent("chorezy:waitlist-joined", {
+        detail: { created: payload.created === true },
+      }));
       setValues(initialValues);
+      window.setTimeout(() => successRef.current?.focus(), 0);
     } catch (error) {
       setStatus("error");
       setMessage(
@@ -104,14 +131,55 @@ export function WaitlistForm() {
     }
   }
 
-  if (status === "success") {
+  const referralUrl = successData?.referralCode
+    ? `${typeof window === "undefined" ? "https://chorezy.com" : window.location.origin}/?ref=${encodeURIComponent(successData.referralCode)}`
+    : "";
+
+  async function copyReferralLink() {
+    if (!referralUrl) return;
+    await navigator.clipboard.writeText(referralUrl);
+    setCopyLabel("Link copied");
+    window.setTimeout(() => setCopyLabel("Copy referral link"), 2200);
+  }
+
+  async function shareReferralLink() {
+    if (!referralUrl || !navigator.share) return;
+    await navigator.share({
+      title: "Join me on Chorezy",
+      text: "Join the Chorezy U.S. launch waitlist with my referral link.",
+      url: referralUrl,
+    });
+  }
+
+  if (status === "success" && successData) {
+    const completedReferrals = Math.min(successData.referralCount, successData.rewardThreshold);
+    const progress = `${completedReferrals} / ${successData.rewardThreshold}`;
     return (
-      <div className="waitlist-success" role="status" tabIndex={-1}>
+      <div className="waitlist-success" ref={successRef} role="status" tabIndex={-1}>
         <span className="waitlist-success__icon"><Icon name="check" size={26} /></span>
-        <p className="eyebrow">You are in</p>
-        <h3>We will let you know when Chorezy reaches your area.</h3>
-        <p>{message}</p>
-        <button className="button button--secondary" type="button" onClick={() => setStatus("idle")}>
+        <p className="eyebrow">You&apos;re on the list</p>
+        <h3>Refer two friends. Get ${successData.creditAmount} at launch.</h3>
+        <p>{message} When two friends join through your link, we&apos;ll add ${successData.creditAmount} in Chorezy credit when you create your account at launch.</p>
+        <div className="referral-progress" aria-label={`${progress} friends joined`}>
+          <div><strong>{progress}</strong><span>friends joined</span></div>
+          <div className="referral-progress__track" aria-hidden="true"><span style={{ width: `${(completedReferrals / successData.rewardThreshold) * 100}%` }} /></div>
+        </div>
+        <div className="referral-link">
+          <span>Your personal link</span>
+          <code>{referralUrl}</code>
+        </div>
+        <div className="referral-actions">
+          <button className="button button--primary" type="button" onClick={() => void copyReferralLink()}>
+            {copyLabel}<Icon name="link" />
+          </button>
+          {typeof navigator !== "undefined" && "share" in navigator && (
+            <button className="button button--secondary" type="button" onClick={() => void shareReferralLink()}>
+              Share link
+            </button>
+          )}
+        </div>
+        <p className="referral-note">Launch credit eligibility is confirmed when referred friends join and you create your Chorezy account.</p>
+        <button className="waitlist-success__reset" type="button" onClick={() => { setStatus("idle"); setSuccessData(null); }}>
           Add another person
         </button>
       </div>

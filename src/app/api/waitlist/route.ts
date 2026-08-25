@@ -6,8 +6,8 @@ const REFERRAL_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const ALLOWED_ROLES = new Set(["chore-poster", "adult-helper", "young-helper", "guardian", "business"]);
 const PRODUCTION_ORIGINS = new Set(["https://chorezy.com", "https://www.chorezy.com"]);
 
-function json(message: string, status = 200) {
-  return NextResponse.json({ message }, { status, headers: { "Cache-Control": "no-store" } });
+function json(message: string, status = 200, data: Record<string, unknown> = {}) {
+  return NextResponse.json({ message, ...data }, { status, headers: { "Cache-Control": "no-store" } });
 }
 
 function referralCode(email: string, salt: string) {
@@ -65,9 +65,33 @@ export async function POST(request: Request) {
   const supabase = createClient(supabaseUrl, serviceRoleKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
-  const code = referralCode(email, referralSalt);
-  const referredBy = referral === "DIRECT" || !/^[A-Z0-9-]{3,32}$/.test(referral) ? null : referral;
-  const { error } = await supabase.from("choreify_waitlist").insert({
+  const generatedCode = referralCode(email, referralSalt);
+  const { data: existing, error: existingError } = await supabase
+    .from("chorezy_waitlist")
+    .select("referral_code")
+    .eq("email", email)
+    .maybeSingle();
+
+  if (existingError) {
+    console.error("Chorezy waitlist lookup failed", { code: existingError.code });
+    return json("We could not save your place right now. Please try again.", 503);
+  }
+
+  let referredBy: string | null = null;
+  if (referral !== "DIRECT" && /^[A-Z0-9-]{3,32}$/.test(referral)) {
+    const { data: referrer } = await supabase
+      .from("chorezy_waitlist")
+      .select("referral_code")
+      .eq("referral_code", referral)
+      .maybeSingle();
+    if (referrer && referral !== existing?.referral_code && referral !== generatedCode) {
+      referredBy = referral;
+    }
+  }
+
+  let code = existing?.referral_code ?? generatedCode;
+  let created = false;
+  const { error } = existing ? { error: null } : await supabase.from("chorezy_waitlist").insert({
     email,
     role,
     zipcode: postalCode,
@@ -88,7 +112,36 @@ export async function POST(request: Request) {
     return json("We could not save your place right now. Please try again.", 503);
   }
 
-  return json("You are on the Chorezy waitlist. We will email you when your area is ready.");
+  created = !existing && !error;
+  if (error?.code === "23505") {
+    const { data: racedEntry, error: racedEntryError } = await supabase
+      .from("chorezy_waitlist")
+      .select("referral_code")
+      .eq("email", email)
+      .maybeSingle();
+    if (racedEntryError || !racedEntry) {
+      console.error("Chorezy waitlist duplicate lookup failed", { code: racedEntryError?.code });
+      return json("We could not load your referral link right now. Please try again.", 503);
+    }
+    code = racedEntry.referral_code;
+  }
+
+  const { count: referralCount, error: referralCountError } = await supabase
+    .from("chorezy_waitlist")
+    .select("id", { count: "exact", head: true })
+    .eq("referred_by_code", code);
+
+  if (referralCountError) {
+    console.error("Chorezy referral count failed", { code: referralCountError.code });
+  }
+
+  return json("Your place is saved. We will email you when your area is ready.", 200, {
+    referralCode: code,
+    referralCount: referralCount ?? 0,
+    rewardThreshold: 2,
+    creditAmount: 5,
+    created,
+  });
 }
 
 export function GET() {

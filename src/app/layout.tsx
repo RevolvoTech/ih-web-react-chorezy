@@ -22,14 +22,6 @@ export const metadata: Metadata = {
   title,
   description,
   applicationName: "Chorezy",
-  keywords: [
-    "local chore help",
-    "neighborhood helpers",
-    "find help nearby",
-    "local jobs for helpers",
-    "household task marketplace",
-    "United States chore app",
-  ],
   alternates: { canonical: "/" },
   icons: {
     icon: "/brand/logo-color.png",

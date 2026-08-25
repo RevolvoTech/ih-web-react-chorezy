@@ -9,13 +9,18 @@ import { WaitlistForm } from "./components/WaitlistForm";
 import { WaitlistCount } from "./components/WaitlistCount";
 import { faqItems } from "./content/faqs";
 
-const choreTypes = ["Yard care", "Pet care", "Errands", "Home help", "Other"] as const;
+const choreTypes = [
+  ["Yard care", "/chores/yard-care/"],
+  ["Pet care", "/chores/pet-care/"],
+  ["Errands", "/chores/errands/"],
+  ["Home help", "/chores/home-help/"],
+] as const;
 
 const safetyItems = [
-  "Young and Adult Helper types",
+  "Young Helpers ages 14–17 and Adult Helpers ages 18+",
   "Guardian visibility for Young Helpers",
-  "Account and task eligibility controls",
-  "In-app communication and safety reporting",
+  "In-app communication and active-task reporting",
+  "Emergency response options with a direct 911 fallback",
 ] as const;
 
 const marketplaceSteps = [
@@ -90,6 +95,8 @@ export function Footer() {
           <p>Local help is closer than you think. Chorezy is preparing to launch across the United States.</p>
         </div>
         <nav aria-label="Footer navigation">
+          <Link href="/earn/young-helpers/">Young Helpers</Link>
+          <Link href="/earn/adult-helpers/">Adult Helpers</Link>
           <Link href="/safety/">Safety</Link>
           <Link href="/privacy/">Privacy</Link>
           <Link href="/terms/">Terms</Link>
@@ -135,7 +142,7 @@ export default function HomePage() {
           </div>
           <div className="shell chore-ribbon" aria-label="Example chore categories">
             <span>Popular ways to use Chorezy</span>
-            <div>{choreTypes.map((type) => <span key={type}>{type}</span>)}</div>
+            <div>{choreTypes.map(([type, href]) => <Link href={href} key={type}>{type}</Link>)}</div>
           </div>
         </section>
 
@@ -148,20 +155,42 @@ export default function HomePage() {
             <div className="audience-grid">
               <article className="audience-card audience-card--household">
                 <span className="audience-card__icon"><Icon name="house" size={28} /></span>
-                <div><p>Households</p><h3>Move the everyday list forward.</h3><span>Post the help you need and choose an eligible local helper who fits the task.</span></div>
+                <div><p>Working moms + busy families</p><h3>Move the everyday list forward.</h3><span>Post the help you need and choose an eligible local helper who fits the task.</span><Link href="/help/working-families/">How Chorezy helps families</Link></div>
               </article>
               <article className="audience-card audience-card--helper">
                 <span className="audience-card__icon"><Icon name="earn" size={28} /></span>
-                <div><p>Adult + Young Helpers</p><h3>Turn free time into nearby earnings.</h3><span>Discover local opportunities that fit your availability, skills, and helper type.</span></div>
+                <div><p>Young Helpers · ages 14–17</p><h3>Turn school breaks into nearby earnings.</h3><span>Explore age-appropriate local opportunities designed around guardian involvement.</span><Link href="/earn/young-helpers/">Learn about Young Helpers</Link></div>
               </article>
               <article className="audience-card audience-card--guardian">
                 <span className="audience-card__icon"><Icon name="family" size={28} /></span>
-                <div><p>Parents + guardians</p><h3>Stay part of the process.</h3><span>Young Helper participation is being designed around guardian visibility and age-appropriate work.</span></div>
+                <div><p>Adult Helpers · ages 18+</p><h3>Choose flexible work close to home.</h3><span>Discover eligible local chores, review the details, and make an offer when the work fits.</span><Link href="/earn/adult-helpers/">Learn about Adult Helpers</Link></div>
               </article>
               <article className="audience-card audience-card--business">
                 <span className="audience-card__icon"><Icon name="store" size={28} /></span>
-                <div><p>Local businesses</p><h3>Find an extra pair of hands nearby.</h3></div>
+                <div><p>Local businesses</p><h3>Find an extra pair of hands nearby.</h3><span>Join the launch waitlist for eligible local operational tasks and flexible help.</span></div>
               </article>
+            </div>
+          </div>
+        </section>
+
+        <section className="family-story" aria-labelledby="family-story-heading">
+          <div className="shell family-story__layout">
+            <div className="family-story__image">
+              <Image
+                alt="A working mother and teenage helper preparing gardening tools outside a suburban home"
+                fill
+                sizes="(max-width: 980px) 100vw, 58vw"
+                src="/images/chorezy-working-families-banner.png"
+              />
+            </div>
+            <div className="family-story__copy">
+              <p className="section-kicker">More room in a full week</p>
+              <h2 id="family-story-heading">Built for families who need time—and neighbors ready to earn.</h2>
+              <p>Working moms and busy households can turn a lingering task into a clear local chore. Young Helpers ages 14–17 can explore suitable work with guardian involvement, while Adult Helpers ages 18+ can choose flexible opportunities nearby.</p>
+              <div className="family-story__links">
+                <Link className="text-link" href="/help/working-families/">For busy families <Icon name="arrow" /></Link>
+                <Link className="text-link" href="/earn/young-helpers/">For Young Helpers <Icon name="arrow" /></Link>
+              </div>
             </div>
           </div>
         </section>
@@ -203,11 +232,19 @@ export default function HomePage() {
 
         <section className="safety-section" id="safety" aria-labelledby="safety-heading">
           <div className="shell safety-layout">
-            <div className="safety-mark" aria-hidden="true"><Icon name="shield" size={72} /></div>
+            <div className="safety-visual">
+              <Image
+                alt="Illustration of a guardian and Young Helper connected to chore safety and emergency response tools"
+                fill
+                sizes="(max-width: 980px) 100vw, 40vw"
+                src="/images/chorezy-safety-response-banner.png"
+              />
+            </div>
             <div className="safety-copy">
               <p className="section-kicker">Safety belongs in the product</p>
               <h2 id="safety-heading">Built for the people behind every task.</h2>
-              <p>Chorezy is being designed around identity and eligibility checks, guardian involvement, in-app communication, protected payment flows, and task-level safety tools.</p>
+              <p>Chorezy is being designed around identity and eligibility checks, guardian involvement, in-app communication, protected payment flows, and task-level safety tools. The active-chore emergency flow supports police/safety, medical, and fire requests through our response integration, while keeping a direct 911 option visible.</p>
+              <p className="safety-disclaimer">Emergency-response availability is still being tested for launch. In immediate danger, call 911 directly.</p>
               <Link className="text-link" href="/safety/">Read our safety approach <Icon name="arrow" /></Link>
             </div>
             <div className="safety-list">

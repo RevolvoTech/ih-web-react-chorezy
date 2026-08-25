@@ -4,21 +4,21 @@ import { faqItems } from "@/content/faqs";
 const structuredData = [
   {
     "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Chorezy",
+    url: "https://chorezy.com/",
+    logo: "https://chorezy.com/brand/logo-color.png",
+    description: "A U.S. neighborhood marketplace being built for local chores and nearby earning opportunities.",
+    areaServed: { "@type": "Country", name: "United States" },
+  },
+  {
+    "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Chorezy",
     url: "https://chorezy.com/",
     description: "A U.S. neighborhood marketplace for posting local chores, comparing offers, and finding nearby work.",
-    inLanguage: "en",
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: "Chorezy",
-    applicationCategory: "LifestyleApplication",
-    operatingSystem: "Android, iOS",
-    url: "https://chorezy.com/",
-    areaServed: { "@type": "Country", name: "United States" },
-    offers: { "@type": "Offer", price: "0", priceCurrency: "USD", availability: "https://schema.org/PreOrder" },
+    inLanguage: "en-US",
+    publisher: { "@type": "Organization", name: "Chorezy", url: "https://chorezy.com/" },
   },
   {
     "@context": "https://schema.org",
