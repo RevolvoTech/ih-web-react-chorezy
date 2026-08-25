@@ -12,7 +12,7 @@ export default function NotAvailablePage() {
     <main className="country-gate">
       <section className="country-gate__card" aria-labelledby="country-gate-heading">
         <Brand compact />
-        <p className="country-gate__badge">United States launch</p>
+        <p className="country-gate__badge">Not available in your country right now</p>
         <h1 id="country-gate-heading">We are starting close to home.</h1>
         <p>
           Chorezy is currently available to visitors in the United States only.

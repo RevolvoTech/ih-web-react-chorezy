@@ -14,14 +14,22 @@ const bodyFont = DM_Sans({
   variable: "--font-body",
 });
 
-const title = "Chorezy | Local Chores and Trusted Neighborhood Helpers";
-const description = "Chorezy is a neighborhood chore marketplace being built for the United States. Join the waitlist to find local help or earn close to home.";
+const title = "Chorezy | Find Local Chore Help or Earn Nearby";
+const description = "Chorezy is a U.S. neighborhood chore marketplace for posting local tasks, comparing helper offers, finding nearby work, and managing chores in one place.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://chorezy.com"),
   title,
   description,
   applicationName: "Chorezy",
+  keywords: [
+    "local chore help",
+    "neighborhood helpers",
+    "find help nearby",
+    "local jobs for helpers",
+    "household task marketplace",
+    "United States chore app",
+  ],
   alternates: { canonical: "/" },
   icons: {
     icon: "/brand/logo-color.png",
@@ -44,13 +52,13 @@ export const metadata: Metadata = {
     siteName: "Chorezy",
     locale: "en_US",
     title,
-    description: "Get local help or earn close to home. Chorezy is launching across the United States.",
+    description: "Post local chores, compare nearby helper offers, or find work close to home. Chorezy is launching in the United States.",
     url: "/",
   },
   twitter: {
     card: "summary_large_image",
     title,
-    description: "Get local help or earn close to home. Join the Chorezy U.S. waitlist.",
+    description: "Post local chores or find nearby work. Join the Chorezy U.S. waitlist.",
   },
 };
 

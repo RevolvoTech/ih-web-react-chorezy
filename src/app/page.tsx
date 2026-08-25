@@ -7,7 +7,7 @@ const structuredData = [
     "@type": "WebSite",
     name: "Chorezy",
     url: "https://chorezy.com/",
-    description: "A neighborhood chore marketplace being built for the United States.",
+    description: "A U.S. neighborhood marketplace for posting local chores, comparing offers, and finding nearby work.",
     inLanguage: "en",
   },
   {

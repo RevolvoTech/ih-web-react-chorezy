@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Brand } from "./components/Brand";
 import { Icon } from "./components/Icons";
 import { WaitlistForm } from "./components/WaitlistForm";
+import { WaitlistCount } from "./components/WaitlistCount";
 import { faqItems } from "./content/faqs";
 
 const choreTypes = ["Yard care", "Pet care", "Errands", "Home help", "Other"] as const;
@@ -15,6 +16,29 @@ const safetyItems = [
   "Guardian visibility for Young Helpers",
   "Account and task eligibility controls",
   "In-app communication and safety reporting",
+] as const;
+
+const marketplaceSteps = [
+  {
+    number: "01",
+    title: "Post the work clearly",
+    description: "Add the chore, timing, location, budget, checklist, and optional photos or voice context so helpers know what the job involves.",
+  },
+  {
+    number: "02",
+    title: "Compare nearby offers",
+    description: "Eligible Adult and Young Helpers can discover suitable local work and make offers. The poster decides who is the right fit.",
+  },
+  {
+    number: "03",
+    title: "Keep the task together",
+    description: "Use in-app conversation, arrival updates, and active-work progress instead of piecing the job together across separate apps.",
+  },
+  {
+    number: "04",
+    title: "Finish with a clear record",
+    description: "Completion proof, payments, reviews, and dispute tools are being built into the chore flow from start to finish.",
+  },
 ] as const;
 
 export function Navigation() {
@@ -40,7 +64,7 @@ export function Navigation() {
         <nav aria-label="Primary navigation" className={open ? "nav nav--open" : "nav"}>
           <Link href="/#how" onClick={() => setOpen(false)}>How it works</Link>
           <Link href="/#safety" onClick={() => setOpen(false)}>Safety</Link>
-          <Link href="/#united-states" onClick={() => setOpen(false)}>United States</Link>
+          <Link href="/#launch" onClick={() => setOpen(false)}>U.S. launch</Link>
           <Link className="button button--nav" href="/#waitlist" onClick={() => setOpen(false)}>Join waitlist</Link>
         </nav>
         <button
@@ -107,15 +131,10 @@ export default function HomePage() {
                   src="/images/chorezy-neighbors-hero.png"
                 />
               </div>
-              <div className="hero-media__stamp" aria-hidden="true"><Icon name="spark" size={22} /> Local looks good</div>
-              <div className="hero-media__caption">
-                <span>Help nearby</span>
-                <span>Work that fits</span>
-              </div>
             </div>
           </div>
           <div className="shell chore-ribbon" aria-label="Example chore categories">
-            <span>Built for the everyday list</span>
+            <span>Popular ways to use Chorezy</span>
             <div>{choreTypes.map((type) => <span key={type}>{type}</span>)}</div>
           </div>
         </section>
@@ -147,17 +166,36 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="journey-section" id="how" aria-labelledby="how-heading">
+        <section className="inside-section" id="how" aria-labelledby="inside-heading">
+          <div className="shell">
+            <div className="inside-heading">
+              <p className="section-kicker">One flow from post to done</p>
+              <h2 id="inside-heading">Less chasing. More getting things done.</h2>
+              <p>Chorezy is being built to keep the details, people, progress, and payment for local chores in one place.</p>
+            </div>
+            <ol className="inside-grid">
+              {marketplaceSteps.map((step) => (
+                <li key={step.number}>
+                  <span>{step.number}</span>
+                  <h3>{step.title}</h3>
+                  <p>{step.description}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section className="journey-section" id="launch" aria-labelledby="launch-heading">
           <div className="shell journey-layout">
             <div className="journey-copy">
               <p className="section-kicker">How the waitlist works</p>
-              <h2 id="how-heading">A local launch starts with local demand.</h2>
+              <h2 id="launch-heading">A local launch starts with local demand.</h2>
               <p>Chorezy is preparing a community-by-community rollout. Your signup helps posters and helpers arrive together.</p>
               <a className="text-link" href="#waitlist">Add your neighborhood <Icon name="arrow" /></a>
             </div>
             <div className="journey-path">
               <article><span><Icon name="pin" size={24} /></span><div><h3>Share your area</h3><p>Enter your U.S. ZIP code.</p></div></article>
-              <article><span><Icon name="spark" size={24} /></span><div><h3>Choose your role</h3><p>Tell us if you need help, want to help, support a Young Helper, or represent a business.</p></div></article>
+              <article><span><Icon name="family" size={24} /></span><div><h3>Choose your role</h3><p>Tell us if you need help, want to help, support a Young Helper, or represent a business.</p></div></article>
               <article><span><Icon name="mail" size={24} /></span><div><h3>Get the right update</h3><p>We will email you when Chorezy is ready for your area and role.</p></div></article>
             </div>
           </div>
@@ -208,6 +246,7 @@ export default function HomePage() {
               <p className="section-kicker">Your neighborhood starts here</p>
               <h2 id="waitlist-heading">Put your area on the Chorezy map.</h2>
               <p>Tell us where you are and how you would use Chorezy. We will send relevant launch updates, not a generic global newsletter.</p>
+              <WaitlistCount />
               <div className="privacy-note"><Icon name="shield" /><span>We ask for a ZIP code, never your street address.</span></div>
             </div>
             <WaitlistForm />

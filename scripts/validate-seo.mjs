@@ -18,7 +18,7 @@ for (const file of files) {
 const home = await readFile(path.resolve(files[0]), "utf8");
 for (const required of [
   "https://chorezy.com/",
-  "Local Chores and Trusted Neighborhood Helpers",
+  "Find Local Chore Help or Earn Nearby",
   'name="description"',
   'property="og:title"',
   'type="application/ld+json"',

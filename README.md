@@ -11,6 +11,7 @@ Official public website and United States launch waitlist for [Chorezy](https://
 - Legacy verification, reset, and invitation deep-link compatibility
 - Versioned email artwork served from `/email/v1/` for backend templates
 - Next.js route handler for writing to the existing Supabase `choreify_waitlist` table
+- Cached aggregate endpoint for the public U.S. waitlist count
 - Canonical metadata, Open Graph tags, JSON-LD, `robots.txt`, and `sitemap.xml`
 
 The legacy database table and `CF-XXXXXX` referral format are intentionally retained so existing records and database constraints do not need to move. Public branding uses Chorezy.
