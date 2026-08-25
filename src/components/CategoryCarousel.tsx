@@ -3,26 +3,26 @@
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
-  BroomIcon,
+  PaintBucketIcon,
   CookingPotIcon,
   HammerIcon,
-  HouseIcon,
   LaptopIcon,
   PawPrintIcon,
-  PlantIcon,
+  ShovelIcon,
+  ToolboxIcon,
   TruckIcon,
 } from "@phosphor-icons/react";
 import Link from "next/link";
-import { type CSSProperties, useRef } from "react";
+import { type CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 
 const categories = [
-  { name: "Cleaning", color: "#009FE3", icon: BroomIcon, examples: "Dusting · sweeping · deep cleaning", href: "/chores/home-help/" },
-  { name: "Yard care", color: "#4CAF50", icon: PlantIcon, examples: "Watering · leaves · lawn care", href: "/chores/yard-care/" },
+  { name: "Cleaning", color: "#009FE3", icon: PaintBucketIcon, examples: "Dusting · sweeping · deep cleaning", href: "/chores/home-help/" },
+  { name: "Yard care", color: "#4CAF50", icon: ShovelIcon, examples: "Watering · leaves · lawn care", href: "/chores/yard-care/" },
   { name: "Pet care", color: "#FF9800", icon: PawPrintIcon, examples: "Walks · feeding · routine visits", href: "/chores/pet-care/" },
   { name: "Errands", color: "#009688", icon: TruckIcon, examples: "Pickups · returns · local drop-offs", href: "/chores/errands/" },
   { name: "Food & groceries", color: "#FFB300", icon: CookingPotIcon, examples: "Groceries · meal prep · kitchen help", href: "/#waitlist" },
   { name: "Tech help", color: "#9C27B0", icon: LaptopIcon, examples: "Device setup · apps · smart-home help", href: "/#waitlist" },
-  { name: "Home help", color: "#7CB342", icon: HouseIcon, examples: "Organizing · setup · small repairs", href: "/chores/home-help/" },
+  { name: "Home help", color: "#7CB342", icon: ToolboxIcon, examples: "Organizing · setup · small repairs", href: "/chores/home-help/" },
   { name: "Assembly", color: "#F59E0B", icon: HammerIcon, examples: "Furniture · DIY kits · hardware setup", href: "/#waitlist" },
 ] as const;
 
@@ -30,15 +30,59 @@ type CategoryStyle = CSSProperties & { "--category-color": string };
 
 export function CategoryCarousel() {
   const railRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
 
-  function move(direction: -1 | 1) {
+  const goTo = useCallback((index: number) => {
     const rail = railRef.current;
     if (!rail) return;
-    rail.scrollBy({ left: direction * Math.min(rail.clientWidth * 0.82, 760), behavior: "smooth" });
+    const normalizedIndex = (index + categories.length) % categories.length;
+    const card = rail.children.item(normalizedIndex) as HTMLElement | null;
+    if (!card) return;
+    const left = card.getBoundingClientRect().left - rail.getBoundingClientRect().left + rail.scrollLeft;
+    rail.scrollTo({ left, behavior: "smooth" });
+    setActiveIndex(normalizedIndex);
+  }, []);
+
+  const move = useCallback((direction: -1 | 1) => {
+    goTo(activeIndex + direction);
+  }, [activeIndex, goTo]);
+
+  useEffect(() => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (paused || reducedMotion.matches) return;
+    const timer = window.setInterval(() => goTo(activeIndex + 1), 5000);
+    return () => window.clearInterval(timer);
+  }, [activeIndex, goTo, paused]);
+
+  function syncActiveCard() {
+    const rail = railRef.current;
+    if (!rail) return;
+    const railLeft = rail.getBoundingClientRect().left;
+    let closestIndex = 0;
+    let closestDistance = Number.POSITIVE_INFINITY;
+    Array.from(rail.children).forEach((card, index) => {
+      const distance = Math.abs(card.getBoundingClientRect().left - railLeft);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    });
+    setActiveIndex(closestIndex);
   }
 
   return (
-    <section className="category-section" aria-labelledby="category-heading">
+    <section
+      className="category-section"
+      id="categories"
+      aria-labelledby="category-heading"
+      onBlurCapture={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onTouchEnd={() => setPaused(false)}
+      onTouchStart={() => setPaused(true)}
+    >
       <div className="shell category-header">
         <div>
           <p className="section-kicker">Ways to use Chorezy</p>
@@ -51,7 +95,14 @@ export function CategoryCarousel() {
         </div>
       </div>
       <div className="category-rail-wrap">
-        <div className="category-rail" ref={railRef} role="region" aria-label="Chore categories" aria-roledescription="carousel">
+        <div
+          className="category-rail"
+          ref={railRef}
+          role="region"
+          aria-label="Chore categories"
+          aria-roledescription="carousel"
+          onScroll={syncActiveCard}
+        >
           {categories.map((category) => {
             const CategoryIcon = category.icon;
             return (
@@ -63,6 +114,20 @@ export function CategoryCarousel() {
             );
           })}
         </div>
+      </div>
+      <div className="category-dots" aria-label="Choose a chore category">
+        {categories.map((category, index) => (
+          <button
+            aria-label={`Show ${category.name}`}
+            aria-pressed={activeIndex === index}
+            key={category.name}
+            onClick={() => goTo(index)}
+            style={{ "--category-color": category.color } as CategoryStyle}
+            type="button"
+          >
+            <span aria-hidden="true" />
+          </button>
+        ))}
       </div>
       <p className="shell category-note">Featured categories are representative. Availability and helper eligibility will vary by category and launch area.</p>
     </section>

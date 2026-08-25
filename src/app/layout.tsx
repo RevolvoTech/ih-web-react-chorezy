@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
+import { Bricolage_Grotesque } from "next/font/google";
+import localFont from "next/font/local";
 import type { ReactNode } from "react";
 import { Analytics } from "@vercel/analytics/next";
 import "../styles.css";
@@ -9,9 +10,17 @@ const displayFont = Bricolage_Grotesque({
   variable: "--font-display",
 });
 
-const bodyFont = DM_Sans({
-  subsets: ["latin"],
+const bodyFont = localFont({
+  src: [
+    { path: "../fonts/airbnb-cereal/AirbnbCereal-Book.otf", weight: "400", style: "normal" },
+    { path: "../fonts/airbnb-cereal/AirbnbCereal-Medium.otf", weight: "500", style: "normal" },
+    { path: "../fonts/airbnb-cereal/AirbnbCereal-Bold.otf", weight: "700", style: "normal" },
+    { path: "../fonts/airbnb-cereal/AirbnbCereal-ExtraBold.otf", weight: "800", style: "normal" },
+  ],
   variable: "--font-body",
+  display: "swap",
+  fallback: ["Arial", "sans-serif"],
+  preload: false,
 });
 
 const title = "Chorezy | Find Local Chore Help or Earn Nearby";
@@ -56,14 +65,14 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   colorScheme: "light",
-  themeColor: "#5b24ee",
+  themeColor: "#226dff",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body className={`${displayFont.variable} ${bodyFont.variable}`}>
         {children}
         <Analytics />

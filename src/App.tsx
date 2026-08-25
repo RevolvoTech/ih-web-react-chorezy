@@ -63,7 +63,7 @@ export function Navigation() {
         <nav aria-label="Primary navigation" className={open ? "nav nav--open" : "nav"}>
           <Link href="/#how" onClick={() => setOpen(false)}>How it works</Link>
           <Link href="/#safety" onClick={() => setOpen(false)}>Safety</Link>
-          <Link href="/#launch" onClick={() => setOpen(false)}>U.S. launch</Link>
+          <Link href="/#launch" onClick={() => setOpen(false)}>Launch</Link>
           <Link className="button button--nav" href="/#waitlist" onClick={() => setOpen(false)}>Join waitlist</Link>
         </nav>
         <button
@@ -84,20 +84,35 @@ export function Footer() {
   return (
     <footer className="site-footer">
       <div className="shell site-footer__grid">
-        <div>
+        <div className="site-footer__brand">
           <Brand />
-          <p>Local help is closer than you think. Chorezy is preparing to launch across the United States.</p>
+          <p>Turn everyday tasks into clear local opportunities—whether you need a hand or want to earn nearby.</p>
+          <Link className="site-footer__cta" href="/#waitlist">Join the waitlist <Icon name="arrow" /></Link>
         </div>
-        <nav aria-label="Footer navigation">
-          <Link href="/earn/young-helpers/">Young Helpers</Link>
-          <Link href="/earn/adult-helpers/">Adult Helpers</Link>
-          <Link href="/safety/">Safety</Link>
-          <Link href="/privacy/">Privacy</Link>
-          <Link href="/terms/">Terms</Link>
+        <nav aria-label="Footer navigation" className="site-footer__nav">
+          <div>
+            <h2>Explore</h2>
+            <Link href="/#how">How it works</Link>
+            <Link href="/#categories">Chore categories</Link>
+            <Link href="/help/working-families/">For busy families</Link>
+          </div>
+          <div>
+            <h2>Earn nearby</h2>
+            <Link href="/earn/young-helpers/">Young Helpers</Link>
+            <Link href="/earn/adult-helpers/">Adult Helpers</Link>
+            <Link href="/chores/yard-care/">Yard care</Link>
+          </div>
+          <div>
+            <h2>Trust</h2>
+            <Link href="/safety/">Safety</Link>
+            <Link href="/privacy/">Privacy</Link>
+            <Link href="/terms/">Terms</Link>
+          </div>
         </nav>
       </div>
       <div className="shell site-footer__bottom">
         <span>© {new Date().getFullYear()} Chorezy</span>
+        <span>Local help, made easier.</span>
       </div>
     </footer>
   );

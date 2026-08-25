@@ -22,9 +22,12 @@ Chorezy is a neighborhood chore marketplace preparing to launch in the United St
   community moments use Guardian green; Adult Helper purple appears only in
   that role's context. Reserve the full role spectrum for a rare brand frame,
   never a generic purple mesh. Keep reading surfaces neutral.
-- Pair Bricolage Grotesque display type with DM Sans body type through
-  `next/font`. Reserve Bricolage for major display headlines; brand text,
-  navigation, buttons, subtitles, card headings, FAQs, and forms use DM Sans.
+- Marketing category cards mirror the Flutter welcome carousel: solid catalog
+  color, white text and iconography, and a translucent white icon tile.
+- Pair Bricolage Grotesque display type with the app's local Airbnb Cereal
+  family through `next/font`. Reserve Bricolage for major display headlines;
+  brand text, navigation, buttons, subtitles, card headings, FAQs, forms, and
+  body copy use Cereal.
 - Avoid fake testimonials, launch counts, ratings, urgency, location claims,
   generic purple mesh gradients, and three identical feature cards.
 

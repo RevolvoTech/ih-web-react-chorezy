@@ -14,7 +14,7 @@ export function proxy(request: NextRequest) {
 
   if (request.nextUrl.pathname.startsWith("/api/")) {
     return NextResponse.json(
-      { message: "Chorezy is currently available in the United States only." },
+      { message: "Chorezy is not available in your country right now." },
       { status: 403, headers: { "Cache-Control": "private, no-store" } },
     );
   }

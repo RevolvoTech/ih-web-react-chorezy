@@ -2,8 +2,17 @@ import type { Metadata } from "next";
 import { Brand } from "@/components/Brand";
 
 export const metadata: Metadata = {
-  title: "Chorezy is launching in the United States first",
-  description: "Chorezy is currently preparing its United States launch.",
+  title: "Chorezy is not available in your country yet",
+  description: "Chorezy is not currently available in this location.",
+  openGraph: {
+    title: "Chorezy is not available in your country yet",
+    description: "Chorezy is not currently available in this location.",
+    url: "/not-available",
+  },
+  twitter: {
+    title: "Chorezy is not available in your country yet",
+    description: "Chorezy is not currently available in this location.",
+  },
   robots: { index: false, follow: false },
 };
 
@@ -13,11 +22,11 @@ export default function NotAvailablePage() {
       <section className="country-gate__card" aria-labelledby="country-gate-heading">
         <Brand compact />
         <p className="country-gate__badge">Not available in your country right now</p>
-        <h1 id="country-gate-heading">We are starting close to home.</h1>
+        <h1 id="country-gate-heading">We are not there yet.</h1>
         <p>
-          Chorezy is currently available to visitors in the United States only.
-          We are focusing on one country first so each local launch can have the
-          right mix of households, helpers, and support.
+          Chorezy is not available in your country right now. We are expanding
+          carefully so each local launch has the right mix of households,
+          helpers, and support.
         </p>
       </section>
     </main>
