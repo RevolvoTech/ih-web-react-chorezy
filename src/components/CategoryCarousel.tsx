@@ -177,6 +177,7 @@ export function CategoryCarousel() {
         <p className="section-kicker">Ways to use Chorezy</p>
         <h2 id="category-heading">What needs doing?</h2>
         <p>Browse a few of the ways households and businesses can ask for help—and helpers can find suitable work nearby.</p>
+        <Link className="category-header__link" href="/chores/">Browse all 18 categories <ArrowRightIcon aria-hidden="true" size={18} weight="bold" /></Link>
       </div>
       <div className="category-rail-wrap">
         <div

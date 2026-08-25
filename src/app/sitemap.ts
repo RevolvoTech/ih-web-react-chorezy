@@ -17,6 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       ],
     },
     { url: "https://chorezy.com/safety/", lastModified, changeFrequency: "monthly", priority: 0.7 },
+    { url: "https://chorezy.com/chores/", lastModified, changeFrequency: "monthly", priority: 0.85 },
     ...discoveryPages.map((page) => ({
       url: `https://chorezy.com${page.path}`,
       lastModified,

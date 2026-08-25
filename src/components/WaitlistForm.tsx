@@ -202,6 +202,14 @@ export function WaitlistForm({ idPrefix = "waitlist", variant = "default" }: Wai
 
   return (
     <form className={`waitlist-form${isHero ? " waitlist-form--hero" : ""}`} onSubmit={handleSubmit} noValidate>
+      {isHero && (
+        <div className="waitlist-form__intro field--wide">
+          <div>
+            <strong>Save your place</strong>
+            <span>Tell us if you need a hand or want to earn nearby.</span>
+          </div>
+        </div>
+      )}
       <div className={`field${isHero ? "" : " field--wide"}`}>
         <label htmlFor={emailId}>Email address</label>
         <input
@@ -256,9 +264,9 @@ export function WaitlistForm({ idPrefix = "waitlist", variant = "default" }: Wai
         />
       </div>
 
-      <div className="honeypot" aria-hidden="true">
-        <label htmlFor={websiteId}>Website</label>
+      <div className="honeypot" aria-hidden="true" inert>
         <input
+          aria-hidden="true"
           autoComplete="off"
           id={websiteId}
           name="website"
@@ -273,12 +281,12 @@ export function WaitlistForm({ idPrefix = "waitlist", variant = "default" }: Wai
       )}
 
       <button className={`button button--primary${isHero ? "" : " field--wide"}`} disabled={status === "submitting"} type="submit">
-        {status === "submitting" ? "Saving your place…" : "Join the U.S. waitlist"}
+        {status === "submitting" ? "Saving your place…" : isHero ? "Join the waitlist" : "Join the U.S. waitlist"}
         {status !== "submitting" && <Icon name="arrow" />}
       </button>
 
       <p className="form-note field--wide">
-        United States locations only. By joining, you agree to receive launch updates. Unsubscribe anytime.
+        U.S. ZIP codes only · Occasional launch updates · Unsubscribe anytime.
       </p>
     </form>
   );

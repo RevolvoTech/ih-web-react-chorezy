@@ -21,7 +21,6 @@ export default function NotAvailablePage() {
     <main className="country-gate">
       <section className="country-gate__card" aria-labelledby="country-gate-heading">
         <Brand compact />
-        <p className="country-gate__badge">Not available in your country right now</p>
         <h1 id="country-gate-heading">We are not there yet.</h1>
         <p>
           Chorezy is not available in your country right now. We are expanding

@@ -1,5 +1,6 @@
 "use client";
 
+import { AndroidLogoIcon, AppleLogoIcon } from "@phosphor-icons/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -88,12 +89,16 @@ export function Footer() {
           <Brand />
           <p>Turn everyday tasks into clear local opportunities—whether you need a hand or want to earn nearby.</p>
           <Link className="site-footer__cta" href="/#waitlist">Join the waitlist <Icon name="arrow" /></Link>
+          <div className="site-footer__platforms" aria-label="Chorezy mobile apps coming soon">
+            <span><AppleLogoIcon aria-hidden="true" size={23} weight="fill" /><span><strong>iOS</strong><small>Coming soon</small></span></span>
+            <span><AndroidLogoIcon aria-hidden="true" size={23} weight="fill" /><span><strong>Android</strong><small>Coming soon</small></span></span>
+          </div>
         </div>
         <nav aria-label="Footer navigation" className="site-footer__nav">
           <div>
             <h2>Explore</h2>
             <Link href="/#how">How it works</Link>
-            <Link href="/#categories">Chore categories</Link>
+            <Link href="/chores/">Chore categories</Link>
             <Link href="/help/working-families/">For busy families</Link>
           </div>
           <div>
@@ -127,9 +132,8 @@ export default function HomePage() {
         <section className="hero">
           <div className="shell hero__grid">
             <div className="hero__copy">
-              <p className="launch-label"><Icon name="pin" size={18} /> United States launch waitlist</p>
-              <h1>Get local help.<span>Earn close to home.</span></h1>
-              <p className="hero__lede">A local chore marketplace for households, helpers, families, and businesses across the United States.</p>
+              <h1>A helping hand,<span>right around the corner.</span></h1>
+              <p className="hero__lede">Chorezy is where busy households and local businesses post everyday chores—and Young Helpers ages 14–17 and Adult Helpers ages 18+ choose suitable work close to home.</p>
               <WaitlistForm idPrefix="hero-waitlist" variant="hero" />
             </div>
 

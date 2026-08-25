@@ -4,6 +4,14 @@ import type { DiscoveryPageData } from "@/content/discovery-pages";
 import { Icon } from "./Icons";
 
 export function DiscoveryPage({ page }: { page: DiscoveryPageData }) {
+  const isChorePage = page.path.startsWith("/chores/");
+  const breadcrumbItems = [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://chorezy.com/" },
+    ...(isChorePage
+      ? [{ "@type": "ListItem", position: 2, name: "Chore categories", item: "https://chorezy.com/chores/" }]
+      : []),
+    { "@type": "ListItem", position: isChorePage ? 3 : 2, name: page.eyebrow, item: `https://chorezy.com${page.path}` },
+  ];
   const structuredData = [
     {
       "@context": "https://schema.org",
@@ -17,10 +25,7 @@ export function DiscoveryPage({ page }: { page: DiscoveryPageData }) {
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: "https://chorezy.com/" },
-        { "@type": "ListItem", position: 2, name: page.eyebrow, item: `https://chorezy.com${page.path}` },
-      ],
+      itemListElement: breadcrumbItems,
     },
   ];
 
@@ -38,7 +43,11 @@ export function DiscoveryPage({ page }: { page: DiscoveryPageData }) {
       <main className="discovery-main" id="main-content">
         <section className="discovery-hero">
           <div className="shell discovery-hero__inner">
-            <nav aria-label="Breadcrumb" className="breadcrumbs"><Link href="/">Home</Link><span>/</span><span>{page.eyebrow}</span></nav>
+            <nav aria-label="Breadcrumb" className="breadcrumbs">
+              <Link href="/">Home</Link><span>/</span>
+              {isChorePage && <><Link href="/chores/">Chore categories</Link><span>/</span></>}
+              <span>{page.eyebrow}</span>
+            </nav>
             <p className="section-kicker">{page.eyebrow}</p>
             <h1>{page.title}</h1>
             <p>{page.intro}</p>
