@@ -1,5 +1,5 @@
 import { FormEvent, useRef, useState } from "react";
-import { Icon } from "./Icons";
+import { Icon, RoleIcon } from "./Icons";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 type ErrorField = "email" | "role" | "postalCode" | null;
@@ -26,11 +26,11 @@ const initialValues: FormValues = {
 };
 
 const roleOptions = [
-  ["chore-poster", "I need help with chores"],
-  ["adult-helper", "I want to earn as an Adult Helper"],
-  ["young-helper", "I want to earn as a Young Helper"],
-  ["guardian", "I am a parent or guardian"],
-  ["business", "I represent a local business"],
+  ["chore-poster", "I need help with chores", "Need help"],
+  ["adult-helper", "I want to earn as an Adult Helper", "Adult Helper"],
+  ["young-helper", "I want to earn as a Young Helper", "Young Helper"],
+  ["guardian", "I am a parent or guardian", "Guardian"],
+  ["business", "I represent a local business", "Business"],
 ] as const;
 
 function isValidPostalCode(value: string) {
@@ -55,12 +55,15 @@ export function WaitlistForm({ idPrefix = "waitlist", variant = "default" }: Wai
   const [copyLabel, setCopyLabel] = useState("Copy referral link");
   const successRef = useRef<HTMLDivElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
-  const roleRef = useRef<HTMLSelectElement>(null);
+  const roleRef = useRef<HTMLInputElement>(null);
   const postalRef = useRef<HTMLInputElement>(null);
   const isHero = variant === "hero";
   const emailId = `${idPrefix}-email`;
   const roleId = `${idPrefix}-role`;
   const postalId = `${idPrefix}-postal`;
+  const emailHelpId = `${idPrefix}-email-help`;
+  const roleHelpId = `${idPrefix}-role-help`;
+  const postalHelpId = `${idPrefix}-postal-help`;
   const websiteId = `${idPrefix}-website`;
   const errorId = `${idPrefix}-error`;
 
@@ -202,18 +205,10 @@ export function WaitlistForm({ idPrefix = "waitlist", variant = "default" }: Wai
 
   return (
     <form className={`waitlist-form${isHero ? " waitlist-form--hero" : ""}`} onSubmit={handleSubmit} noValidate>
-      {isHero && (
-        <div className="waitlist-form__intro field--wide">
-          <div>
-            <strong>Save your place</strong>
-            <span>Tell us if you need a hand or want to earn nearby.</span>
-          </div>
-        </div>
-      )}
       <div className={`field${isHero ? "" : " field--wide"}`}>
         <label htmlFor={emailId}>Email address</label>
         <input
-          aria-describedby={errorField === "email" ? errorId : undefined}
+          aria-describedby={`${emailHelpId}${errorField === "email" ? ` ${errorId}` : ""}`}
           aria-invalid={errorField === "email"}
           autoComplete="email"
           id={emailId}
@@ -226,31 +221,17 @@ export function WaitlistForm({ idPrefix = "waitlist", variant = "default" }: Wai
           type="email"
           value={values.email}
         />
-      </div>
-
-      <div className={`field${isHero ? "" : " field--wide"}`}>
-        <label htmlFor={roleId}>How would you use Chorezy?</label>
-        <select
-          aria-describedby={errorField === "role" ? errorId : undefined}
-          aria-invalid={errorField === "role"}
-          id={roleId}
-          name="role"
-          onChange={(event) => setValues({ ...values, role: event.target.value })}
-          ref={roleRef}
-          required
-          value={values.role}
-        >
-          <option value="">Select one</option>
-          {roleOptions.map(([value, label]) => (
-            <option key={value} value={value}>{label}</option>
-          ))}
-        </select>
+        <p className="field-help" id={emailHelpId}>
+          {isHero
+            ? "One launch email. No newsletters."
+            : "We'll send one email when Chorezy launches in your area—no newsletters."}
+        </p>
       </div>
 
       <div className={`field${isHero ? "" : " field--wide"}`}>
         <label htmlFor={postalId}>ZIP code</label>
         <input
-          aria-describedby={errorField === "postalCode" ? errorId : undefined}
+          aria-describedby={`${postalHelpId}${errorField === "postalCode" ? ` ${errorId}` : ""}`}
           aria-invalid={errorField === "postalCode"}
           autoComplete="postal-code"
           id={postalId}
@@ -262,7 +243,43 @@ export function WaitlistForm({ idPrefix = "waitlist", variant = "default" }: Wai
           required
           value={values.postalCode}
         />
+        <p className="field-help" id={postalHelpId}>
+          {isHero
+            ? "Helps us see when enough local users are ready."
+            : "We use your ZIP to see where enough households and helpers are ready to launch together."}
+        </p>
       </div>
+
+      <fieldset
+        aria-describedby={`${roleHelpId}${errorField === "role" ? ` ${errorId}` : ""}`}
+        className="field field--wide role-field"
+        id={roleId}
+      >
+        <legend>How would you use Chorezy?</legend>
+        <p className={`field-help${isHero ? " visually-hidden" : ""}`} id={roleHelpId}>Choose the role that fits you best.</p>
+        <div className="role-options">
+          {roleOptions.map(([value, label, shortLabel], index) => (
+            <label className={`role-option role-option--${value}`} key={value}>
+              <input
+                aria-label={label}
+                checked={values.role === value}
+                className="role-option__input"
+                name="role"
+                onChange={(event) => setValues({ ...values, role: event.target.value })}
+                ref={index === 0 ? roleRef : undefined}
+                required={index === 0}
+                type="radio"
+                value={value}
+              />
+              <span className="role-option__surface">
+                <span className="role-option__icon" aria-hidden="true"><RoleIcon name={value} size={20} /></span>
+                <span>{isHero ? shortLabel : label}</span>
+                <span className="role-option__check" aria-hidden="true"><Icon name="check" size={14} /></span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <div className="honeypot" aria-hidden="true" inert>
         <input
@@ -280,13 +297,13 @@ export function WaitlistForm({ idPrefix = "waitlist", variant = "default" }: Wai
         <p className="form-message" id={errorId} role="alert">{message}</p>
       )}
 
-      <button className={`button button--primary${isHero ? "" : " field--wide"}`} disabled={status === "submitting"} type="submit">
+      <button className="button button--primary field--wide" disabled={status === "submitting"} type="submit">
         {status === "submitting" ? "Saving your place…" : "Join the U.S. waitlist"}
         {status !== "submitting" && <Icon name="arrow" />}
       </button>
 
       <p className="form-note field--wide">
-        U.S. ZIP codes only · Occasional launch updates · Unsubscribe anytime.
+        U.S. ZIP codes only · One launch email · No newsletter.
       </p>
     </form>
   );

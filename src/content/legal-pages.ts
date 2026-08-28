@@ -18,9 +18,9 @@ export const legalPages = {
     intro: "This notice covers information submitted through the Chorezy launch waitlist. It is not the final in-app privacy policy for the public marketplace.",
     sections: [
       ["What we collect", "The waitlist collects your email address, intended role, and ZIP code. We may also store a referral code and basic technical records needed to secure the form."],
-      ["Why we collect it", "We use the information to understand regional demand, plan the United States rollout, prevent abuse, and send relevant launch updates."],
+      ["Why we collect it", "We use the information to understand regional demand, plan the United States rollout, prevent abuse, and send one email when Chorezy launches in your area."],
       ["How it is shared", "We use service providers that support website hosting, database storage, security, and email delivery. We do not sell waitlist information."],
-      ["Your choices", "You can unsubscribe from launch emails at any time. To request access or deletion, email chorezy@revolvo.tech from the address you used to join."],
+      ["Your choices", "You can opt out before the launch email is sent. To request access or deletion, email chorezy@revolvo.tech from the address you used to join."],
     ],
   },
   "/terms": {
@@ -30,7 +30,7 @@ export const legalPages = {
     intro: "Joining the Chorezy waitlist expresses interest in the product. It does not create a marketplace account, guarantee launch availability, or reserve paid services.",
     sections: [
       ["Eligibility", "The current waitlist is intended for people and businesses located in the United States. Young people should join with the knowledge of a parent or guardian."],
-      ["Launch communications", "By joining, you agree to receive Chorezy launch and availability updates. You can unsubscribe through any marketing email."],
+      ["Launch communications", "By joining, you agree to receive one email when Chorezy launches in your area. You can opt out before it is sent."],
       ["Referral credit", "A waitlist member may be eligible for $5 in Chorezy launch credit after two distinct people join through that member's personal referral link and the member creates an eligible Chorezy account at launch. Duplicate, fraudulent, self-referred, ineligible, or deleted entries do not qualify. Credit is promotional, non-transferable, has no cash value, and may be subject to launch-area and account requirements. Chorezy may correct or end the promotion before launch if needed to prevent abuse or comply with law."],
       ["No guarantee of availability", "Launch timing, supported locations, product features, and eligibility requirements may change as testing and regional rollout continue."],
     ],

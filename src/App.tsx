@@ -1,6 +1,6 @@
 "use client";
 
-import { AndroidLogoIcon, AppleLogoIcon } from "@phosphor-icons/react";
+import { AppleLogoIcon, GooglePlayLogoIcon } from "@phosphor-icons/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -90,8 +90,8 @@ export function Footer() {
           <p>Turn everyday tasks into clear local opportunities—whether you need a hand or want to earn nearby.</p>
           <Link className="site-footer__cta" href="/#waitlist">Join the waitlist <Icon name="arrow" /></Link>
           <div className="site-footer__platforms" aria-label="Chorezy mobile apps coming soon">
-            <span><AppleLogoIcon aria-hidden="true" size={23} weight="fill" /><span><strong>iOS</strong><small>Coming soon</small></span></span>
-            <span><AndroidLogoIcon aria-hidden="true" size={23} weight="fill" /><span><strong>Android</strong><small>Coming soon</small></span></span>
+            <span className="platform-badge platform-badge--ios"><AppleLogoIcon aria-hidden="true" size={27} weight="fill" /><span><strong>iOS</strong><small>Coming soon</small></span></span>
+            <span className="platform-badge platform-badge--android"><GooglePlayLogoIcon aria-hidden="true" size={27} weight="fill" /><span><strong>Google Play</strong><small>Coming soon</small></span></span>
           </div>
         </div>
         <nav aria-label="Footer navigation" className="site-footer__nav">
@@ -296,7 +296,7 @@ export default function HomePage() {
             <div className="waitlist-copy">
               <p className="section-kicker">Your neighborhood starts here</p>
               <h2 id="waitlist-heading">Put your area on the Chorezy map.</h2>
-              <p>Tell us where you are and how you would use Chorezy. We will send relevant launch updates, not a generic global newsletter.</p>
+              <p>Tell us where you are and how you would use Chorezy. We will send one email when Chorezy launches in your area—not a newsletter.</p>
               <WaitlistCount />
               <div className="privacy-note"><Icon name="shield" /><span>We ask for a ZIP code, never your street address.</span></div>
             </div>

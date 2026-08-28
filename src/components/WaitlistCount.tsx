@@ -50,9 +50,15 @@ export function WaitlistCount({ className = "" }: WaitlistCountProps) {
     <p className={`waitlist-count ${className}`.trim()} aria-live="polite">
       <span className="waitlist-count__icon" aria-hidden="true"><Icon name="family" size={18} /></span>
       {count === 0 ? (
-        <span><strong>0 signups so far.</strong> Be the first in your area.</span>
+        <span className="waitlist-count__copy">
+          <strong>Be the first signup</strong>
+          <span className="waitlist-count__detail">Help put your area on the map.</span>
+        </span>
       ) : (
-        <span><strong>{count.toLocaleString("en-US")} {count === 1 ? "person" : "people"}</strong> {count === 1 ? "has" : "have"} joined the U.S. waitlist.</span>
+        <span className="waitlist-count__copy">
+          <strong><span className="waitlist-count__number">{count.toLocaleString("en-US")}</span> {count === 1 ? "signup" : "signups"} so far</strong>
+          <span className="waitlist-count__detail">Join the growing U.S. waitlist.</span>
+        </span>
       )}
     </p>
   );
