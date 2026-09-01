@@ -100,7 +100,7 @@ export function WaitlistForm({ idPrefix = "waitlist", variant = "default" }: Wai
 
     try {
       const referral = new URLSearchParams(window.location.search).get("ref") ?? "direct";
-      const response = await fetch("/api/waitlist", {
+      const response = await fetch("/api/waitlist/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -15,7 +15,7 @@ export function WaitlistCount({ className = "" }: WaitlistCountProps) {
 
     async function loadCount() {
       try {
-        const response = await fetch("/api/waitlist/count", {
+        const response = await fetch("/api/waitlist/count/", {
           signal: controller.signal,
         });
         if (!response.ok) return;

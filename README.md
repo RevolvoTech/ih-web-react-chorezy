@@ -48,10 +48,10 @@ Never commit `.env` or Supabase service-role credentials.
 2. Set the variables above in the production environment.
 3. Add `chorezy.com` and `www.chorezy.com` to the production environment.
 4. Add the DNS records Vercel supplies and choose the preferred canonical domain.
-5. Confirm `/api/waitlist`, `/robots.txt`, `/sitemap.xml`, and the four public pages after deployment.
+5. Confirm `/api/waitlist/`, `/robots.txt`, `/sitemap.xml`, and the four public pages after deployment.
 6. Enable Web Analytics in the Vercel project dashboard.
 
-Vercel deploys the Next.js route handler at `/api/waitlist` and provides the
+Vercel deploys the Next.js route handler at `/api/waitlist/` and provides the
 `x-vercel-ip-country` header used by the United States launch gate.
 
 ## Quality checks
