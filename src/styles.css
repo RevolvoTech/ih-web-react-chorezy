@@ -375,6 +375,10 @@ section[id], h2[id] { scroll-margin-top: 96px; }
 .site-footer__brand .brand__tag { color: rgba(255, 255, 255, 0.58); }
 .site-footer__brand > p { max-width: 470px; margin: 26px 0 0; color: rgba(255, 255, 255, 0.68); font-size: 1rem; line-height: 1.7; }
 .site-footer__cta { min-height: 44px; display: inline-flex; align-items: center; gap: 9px; margin-top: 28px; color: #fff; font-weight: 800; text-underline-offset: 5px; }
+.site-footer__socials { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 24px; }
+.site-footer__socials a { min-height: 44px; display: inline-flex; align-items: center; gap: 8px; padding: 0 15px; color: rgba(255, 255, 255, 0.82); background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 999px; font-size: 0.79rem; font-weight: 800; line-height: 1; text-decoration: none; transition: color 160ms ease, background 160ms ease, border-color 160ms ease, transform 160ms ease; }
+.site-footer__socials a:hover { color: #111a2f; background: #fff; border-color: #fff; transform: translateY(-2px); }
+.site-footer__socials a:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .site-footer__platforms { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
 .platform-badge { min-width: 154px; min-height: 58px; display: flex; align-items: center; gap: 11px; padding: 10px 15px; color: #fff; border: 1px solid transparent; border-radius: 13px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08); }
 .platform-badge > span { display: grid; gap: 2px; }

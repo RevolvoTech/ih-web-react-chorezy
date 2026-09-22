@@ -1,6 +1,6 @@
 "use client";
 
-import { AppleLogoIcon, GooglePlayLogoIcon } from "@phosphor-icons/react";
+import { AppleLogoIcon, FacebookLogoIcon, GooglePlayLogoIcon, InstagramLogoIcon, XLogoIcon } from "@phosphor-icons/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -89,6 +89,11 @@ export function Footer() {
           <Brand />
           <p>Turn everyday tasks into clear local opportunities—whether you need a hand or want to earn nearby.</p>
           <Link className="site-footer__cta" href="/#waitlist">Join the waitlist <Icon name="arrow" /></Link>
+          <div className="site-footer__socials" aria-label="Follow Chorezy">
+            <a aria-label="Follow Chorezy on X" href="https://x.com/chorezyapp" rel="noreferrer" target="_blank"><XLogoIcon aria-hidden="true" size={19} weight="bold" /><span>X</span></a>
+            <a aria-label="Follow Chorezy on Instagram" href="https://www.instagram.com/chorezyapp/" rel="noreferrer" target="_blank"><InstagramLogoIcon aria-hidden="true" size={20} weight="bold" /><span>Instagram</span></a>
+            <a aria-label="Follow Chorezy on Facebook" href="https://www.facebook.com/chorezy" rel="noreferrer" target="_blank"><FacebookLogoIcon aria-hidden="true" size={20} weight="fill" /><span>Facebook</span></a>
+          </div>
           <div className="site-footer__platforms" aria-label="Chorezy mobile apps coming soon">
             <span className="platform-badge platform-badge--ios"><AppleLogoIcon aria-hidden="true" size={27} weight="fill" /><span><strong>iOS</strong><small>Coming soon</small></span></span>
             <span className="platform-badge platform-badge--android"><GooglePlayLogoIcon aria-hidden="true" size={27} weight="fill" /><span><strong>Google Play</strong><small>Coming soon</small></span></span>
