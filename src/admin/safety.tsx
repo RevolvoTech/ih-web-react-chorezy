@@ -7,6 +7,8 @@ import {
   type FormEvent,
 } from "react";
 import { useAdmin } from "./auth";
+import { WorkspaceSkeleton } from "./loading";
+import { useSearchParams } from "next/navigation";
 import type {
   SafetyAction,
   SafetyContext,
@@ -50,6 +52,7 @@ const reasons = [
 ];
 export function SafetyPage() {
   const { api } = useAdmin();
+  const linkedIdentifier = useSearchParams().get("identifier");
   const [identifier, setIdentifier] = useState("");
   const [context, setContext] = useState<SafetyContext | null>(null);
   const [loading, setLoading] = useState(false);
@@ -107,18 +110,17 @@ export function SafetyPage() {
   );
   useEffect(() => {
     const requestState = generation.current;
-    const identifier = new URLSearchParams(window.location.search).get(
-      "identifier",
-    );
-    if (identifier) {
+    let active = true;
+    if (linkedIdentifier) {
       queueMicrotask(() => {
-        void lookup(identifier);
+        if (active) void lookup(linkedIdentifier);
       });
     }
     return () => {
       requestState.value++;
+      active = false;
     };
-  }, [lookup]); // Initial deep link only; backend resolves the identifier.
+  }, [lookup, linkedIdentifier]); // Every deep link resolves fresh account context.
   const permanent = ["permanent_suspension", "platform_exclusion"].includes(
     type,
   );
@@ -155,6 +157,7 @@ export function SafetyPage() {
     setBusy(true);
     setError("");
     setNotice("");
+    const request = generation.current.value;
     try {
       const result =
         "payload" in pending
@@ -163,6 +166,8 @@ export function SafetyPage() {
               pending.revoke.actionId,
               revokeReason.trim(),
             );
+      // Back/forward can resolve a different account while this action finishes.
+      if (generation.current.value !== request) return;
       setContext(result.data);
       setNotice([result.message, ...(result.warnings || [])].join(" "));
       setNote("");
@@ -170,6 +175,7 @@ export function SafetyPage() {
       setPublicMessage("");
       setPending(null);
     } catch (error) {
+      if (generation.current.value !== request) return;
       setError(
         `${error instanceof Error ? error.message : "Action could not be confirmed."} Reload the account and inspect its action history before trying again.`,
       );
@@ -207,6 +213,7 @@ export function SafetyPage() {
         </AdminButton>
       </form>
       {error && <Notice error>{error}</Notice>}
+      {!context && loading && <WorkspaceSkeleton kind="safety" />}
       {notice && <Notice>{notice}</Notice>}
       {!context && !loading && !error && (
         <Empty>

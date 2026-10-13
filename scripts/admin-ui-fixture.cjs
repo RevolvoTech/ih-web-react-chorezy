@@ -1,6 +1,6 @@
 /* Local browser fixture only. No real users, credentials, provider calls or writes. */
 module.exports = async (page) => {
-  const origin = "http://127.0.0.1:4058";
+  const origin = new URL(page.url()).origin;
   const at = "2026-10-13T16:00:00.000Z";
   const user = {
     id: "00000000-0000-4000-8000-000000000001",
@@ -185,7 +185,7 @@ module.exports = async (page) => {
     if (url.origin === origin) return route.continue();
     if (request.method() === "OPTIONS")
       return route.fulfill({ status: 204, headers });
-    if (url.hostname === "chorezy-admin-fixture.supabase.co") {
+    if (url.hostname.endsWith(".supabase.co")) {
       const delay =
         url.pathname === "/auth/v1/token"
           ? state.signInDelayMs
@@ -206,7 +206,9 @@ module.exports = async (page) => {
       if (url.pathname === "/auth/v1/logout") return reply({});
       return reply({ message: "Unsupported fixture authentication path" }, 404);
     }
-    if (url.origin !== "http://127.0.0.1:4059")
+    if (
+      !["http://127.0.0.1:4059", "http://localhost:4059"].includes(url.origin)
+    )
       return route.abort("blockedbyclient");
     if (url.pathname === "/__fixture/control") {
       if (request.method() === "POST")
@@ -221,9 +223,11 @@ module.exports = async (page) => {
       });
     }
     const path = url.pathname.replace("/api/v1/admin", "");
-    state.calls.push({ path, method: request.method() });
+    state.calls.push({ path, method: request.method(), query: url.search });
     if (path === "/support-chat/tickets" && state.supportReadDelayMs)
-      await new Promise((resolve) => setTimeout(resolve, state.supportReadDelayMs));
+      await new Promise((resolve) =>
+        setTimeout(resolve, state.supportReadDelayMs),
+      );
     if (state.delayMs)
       await new Promise((resolve) => setTimeout(resolve, state.delayMs));
     if (state.apiStatus !== 200 || state.errorPath === path)
@@ -304,7 +308,10 @@ module.exports = async (page) => {
       };
       state.messages.push(message);
       if (state.replyFailureAfterCommit)
-        return reply({ message: "Fixture lost acknowledgement after delivery" }, 503);
+        return reply(
+          { message: "Fixture lost acknowledgement after delivery" },
+          503,
+        );
       return reply({ message });
     }
     if (path === "/safety/context") return reply({ data: safety() });

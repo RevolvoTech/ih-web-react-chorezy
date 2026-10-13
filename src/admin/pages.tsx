@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { Suspense, useCallback, useState } from "react";
 import { IconRefresh } from "@tabler/icons-react";
 import { useAdmin } from "./auth";
 import { useRemote } from "./hooks";
 import { SafetyPage } from "./safety";
 import { SupportPage } from "./support";
+import { DetailSkeleton, WorkspaceSkeleton } from "./loading";
 import {
   AdminButton,
   ConfirmDialog,
@@ -26,7 +27,9 @@ export function AdminSection({ section }: { section: string }) {
   return section === "support" ? (
     <SupportPage />
   ) : section === "safety" ? (
-    <SafetyPage />
+    <Suspense fallback={<WorkspaceSkeleton kind="safety" />}>
+      <SafetyPage />
+    </Suspense>
   ) : section === "referrals" ? (
     <ReferralsPage />
   ) : section === "emergency" ? (
@@ -50,11 +53,13 @@ function ReadStatus({
   loading,
   updatedAt,
   hasData,
+  refresh,
 }: {
   error: string | null;
   loading: boolean;
   updatedAt: string | null;
   hasData: boolean;
+  refresh: () => void;
 }) {
   return error ? (
     <Notice error>
@@ -65,10 +70,11 @@ function ReadStatus({
           · Showing the last successful snapshot; counts may be outdated.
         </span>
       )}
+      <AdminButton variant="secondary" onClick={refresh}>
+        Try again
+      </AdminButton>
     </Notice>
-  ) : !hasData && loading ? (
-    <Notice>Loading records…</Notice>
-  ) : (
+  ) : !hasData && loading ? null : (
     <p className="admin-read-status" aria-live="polite">
       {loading
         ? "Refreshing records…"
@@ -135,6 +141,7 @@ function OverviewPage() {
         <Refresh onClick={state.refresh} busy={state.loading} />
       </div>
       <ReadStatus {...state} hasData={Boolean(data)} />
+      {!data && state.loading && <WorkspaceSkeleton kind="overview" />}
       {data && (
         <>
           <Metrics
@@ -262,6 +269,7 @@ function ReferralsPage() {
         <Refresh onClick={state.refresh} busy={state.loading} />
       </Search>
       <ReadStatus {...state} hasData={Boolean(data)} />
+      {!data && state.loading && <WorkspaceSkeleton kind="referrals" />}
       {notice && <Notice error={notice.error}>{notice.text}</Notice>}
       {data && (
         <>
@@ -432,6 +440,7 @@ function TrustPage() {
         <Refresh onClick={state.refresh} busy={state.loading} />
       </Search>
       <ReadStatus {...state} hasData={Boolean(data)} />
+      {!data && state.loading && <WorkspaceSkeleton kind="trust" />}
       {data && (
         <>
           <Metrics
@@ -522,6 +531,7 @@ function TrustDetail({ id }: { id: string }) {
   return (
     <Panel title="Case detail">
       <ReadStatus {...state} hasData={Boolean(item)} />
+      {!item && state.loading && <DetailSkeleton />}
       {item && (
         <div className="admin-panel-body">
           <div className="admin-record-top">
@@ -615,6 +625,7 @@ function EmergencyPage() {
         <Refresh onClick={state.refresh} busy={state.loading} />
       </div>
       <ReadStatus {...state} hasData={Boolean(data)} />
+      {!data && state.loading && <WorkspaceSkeleton kind="emergency" />}
       {data && (
         <>
           <Notice>
@@ -683,6 +694,7 @@ function EmergencyDetail({ id }: { id: string }) {
   return (
     <Panel title="Incident detail">
       <ReadStatus {...state} hasData={Boolean(item)} />
+      {!item && state.loading && <DetailSkeleton />}
       {item && (
         <div className="admin-panel-body">
           <Status context="emergency">{item.status}</Status>

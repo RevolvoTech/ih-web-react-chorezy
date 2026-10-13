@@ -43,14 +43,16 @@ export function Panel({
   children,
   className = "",
   aside,
+  id,
 }: {
   title: string;
   children: ReactNode;
   className?: string;
   aside?: ReactNode;
+  id?: string;
 }) {
   return (
-    <section className={`admin-panel ${className}`}>
+    <section id={id} className={`admin-panel ${className}`}>
       <header className="admin-panel-header">
         <h2>{title}</h2>
         {aside}

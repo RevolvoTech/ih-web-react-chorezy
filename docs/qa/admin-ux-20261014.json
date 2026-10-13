@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-14",
+  "timezone": "Asia/Karachi",
+  "scope": "Local Chorezy staff dashboard UX refinement; intercepted browser fixtures",
+  "fullMatrixRowsPromoted": 0,
+  "providerCalls": 0,
+  "realStaffMutations": 0,
+  "productionWebsiteDeployment": false,
+  "typography": {
+    "pageTitles": "Bricolage Grotesque",
+    "navigationContentControls": "Local Cereal through next/font bodyFont",
+    "browserFontLoadVerified": true
+  },
+  "verified": [
+    "Six labeled section links with semantic accents and exactly one current-page indicator",
+    "Overview, support, safety, trust, emergency and referrals use initial component skeletons without fabricated zero metrics",
+    "Trust and emergency selected records have detail skeletons; emergency detail failure recovers through Try again",
+    "Overview initial failure leaves metrics absent until successful retry",
+    "Support background refresh failure retains the last successful counts and the unsent draft; send is disabled until a successful read",
+    "Repeated header lookups on the existing Safety route request each new encoded identifier",
+    "Customer safety link is visible while customer details remain collapsed",
+    "Two rapid Ctrl+Enter presses submit one intercepted support reply",
+    "A lost acknowledgement keeps the draft and uncertainty warning across ticket reselection; one delivered fixture message appears and no automatic duplicate POST occurs",
+    "390px support detail and return-to-inbox scroll to 32px from the viewport top with no document overflow",
+    "320px navigation/support remain within viewport width",
+    "Keyboard Tab exposes the skip link and Enter focuses admin-content",
+    "Reduced-motion mode disables skeleton animation"
+  ],
+  "navigationRegression": {
+    "scenario": "Start an internal note on one account, then browser Back to the previous Safety account while the first response is delayed",
+    "before": {
+      "urlAccount": "fixture-second",
+      "displayedAccount": "fixture-first"
+    },
+    "after": {
+      "urlAccount": "fixture-second",
+      "displayedAccount": "fixture-second",
+      "mutationTargets": ["fixture-first"]
+    },
+    "fix": "Fence action success and failure UI updates with the current account lookup generation",
+    "unchangedAccountSuccessControl": true,
+    "normalSuccessClearsDraft": true
+  },
+  "staticChecks": {
+    "typescript": "PASS",
+    "focusedEslint": "PASS",
+    "apiPresentationTests": "13 PASS",
+    "nextWebpackProductionBuild": "PASS",
+    "seoOutputValidator": "PASS"
+  },
+  "screenshots": [
+    "admin-ux-20261014/overview-desktop.png",
+    "admin-ux-20261014/support-loading.png",
+    "admin-ux-20261014/support-mobile-detail.png",
+    "admin-ux-20261014/support-mobile-inbox.png"
+  ],
+  "limitations": [
+    "Browser authentication/API responses were intercepted; this is not proof of real deployment CORS or backend write enforcement",
+    "Investigation freeze, complete transcripts, reconciled ledger, evidence preservation/export and granular staff privileges still need backend contracts",
+    "Website uses the existing fixed light design system",
+    "Local proxy and ignored localhost API settings are preview-only"
+  ]
+}

@@ -30,10 +30,10 @@ marketing experience; its layouts and visual styles are unchanged.
 
 Set these **public build-time** values on the website:
 
-| Variable | Purpose |
-| --- | --- |
-| `NEXT_PUBLIC_CHOREZY_ADMIN_API_URL` | `https://api.chorezy.com/api/v1`; an origin also works |
-| `NEXT_PUBLIC_STAFF_SUPABASE_URL` | Existing authorized staff Supabase project URL |
+| Variable                              | Purpose                                                |
+| ------------------------------------- | ------------------------------------------------------ |
+| `NEXT_PUBLIC_CHOREZY_ADMIN_API_URL`   | `https://api.chorezy.com/api/v1`; an origin also works |
+| `NEXT_PUBLIC_STAFF_SUPABASE_URL`      | Existing authorized staff Supabase project URL         |
 | `NEXT_PUBLIC_STAFF_SUPABASE_ANON_KEY` | Its public anon or publishable key; never service role |
 
 These are independent of the server-only waitlist configuration. Stripe,
@@ -62,14 +62,14 @@ authorization.
 All paths are under `/api/v1/admin` and send the current Supabase bearer token.
 No mobile version headers, demo fallback or provider keys are synthesized.
 
-| Page | Existing operations |
-| --- | --- |
-| Account overview | `GET /platform-analytics/world-domination?days=...` |
-| User support | `GET /support-chat/tickets`; `POST /support-chat/tickets/:id/messages` |
-| Safety | `GET /safety/context`; `POST /safety/actions`; `POST /safety/actions/:actionId/revoke` |
-| Referrals | `GET /referrals/stats`; `GET /referrals/referrers`; confirmed `POST /referrals/release-eligible` |
-| Emergency | Summary, incidents and individual incident reads |
-| Trust review | Summary, cases, individual case and event reads |
+| Page             | Existing operations                                                                              |
+| ---------------- | ------------------------------------------------------------------------------------------------ |
+| Account overview | `GET /platform-analytics/world-domination?days=...`                                              |
+| User support     | `GET /support-chat/tickets`; `POST /support-chat/tickets/:id/messages`                           |
+| Safety           | `GET /safety/context`; `POST /safety/actions`; `POST /safety/actions/:actionId/revoke`           |
+| Referrals        | `GET /referrals/stats`; `GET /referrals/referrers`; confirmed `POST /referrals/release-eligible` |
+| Emergency        | Summary, incidents and individual incident reads                                                 |
+| Trust review     | Summary, cases, individual case and event reads                                                  |
 
 Safety supports a temporary suspension, timed manual review hold, permanent
 suspension, exclusion and support note. The manual hold is currently a **timed
@@ -163,3 +163,53 @@ branch's work.
   recorded separately in the Chorezy QA matrices.
 - The parent fixture server was stopped after browser review. Generated
   `next-env.d.ts` imports reflect the completed production build.
+
+### UX refinement brief (2026-10-13)
+
+Owner requested clearer task flow, a multicolor sidebar, the website font
+combination and Alshubaily-style component skeletons. This remains a compact
+Next.js staff console for support, money and youth-safety operations. Navigation
+is grouped by task, with section accents, text labels, a persistent selected
+indicator and account lookup by email/phone/ID. Bricolage Grotesque is limited to
+page titles; local Cereal is used for navigation, content and controls. Reading
+surfaces remain neutral. Shared skeletons reserve metric/list/detail geometry
+for initial reads; refresh retains the last successful data, errors show retry,
+and real zero/empty states appear only after successful responses. Reduced
+motion disables placeholder animation. Support prioritizes messages/composition,
+with expandable customer details, a mobile return-to-inbox action and an
+explicit customer-visible reply hint.
+
+References: project DESIGN.md/components, Alshubaily AcceptanceContentSkeleton
+(read-only reference), UI/UX Pro Max loading/navigation guidance, focused
+fixing-accessibility, and Carbon loading-pattern guidance through Design Systems
+MCP. Existing backend contracts govern available controls. New investigation,
+transcript, ledger, preservation/export and staff privilege contracts remain
+recorded in backend-gaps.ts; this pass does not invent those operations.
+
+Local owner preview: `node scripts/admin-local-preview.mjs` serves port4058 and a
+loopback-only fixed Chorezy admin API proxy on4059. Only public staff Supabase
+values are copied into ignored `.env.local`. API authorization stays at Chorezy;
+unknown origins/paths and unauthenticated requests are rejected by the proxy.
+Do not deploy the local proxy or localhost API setting as website production
+configuration. Owner may log in using their existing authorized staff account.
+
+### UX verification checkpoint (2026-10-14)
+
+The requested typography, sidebar and component loading changes passed desktop,
+390px/320px, keyboard and reduced-motion checks. Initial failures show retry;
+refresh failures retain successful values and support drafts. A lost reply
+acknowledgement still requires a fresh conversation check and produces no
+automatic retry. Customer account context is accessible without expanding the
+details panel. Two rapid keyboard sends produced one fixture request.
+
+Browser Back during a delayed Safety action reproduced a previous account's
+response replacing the newly resolved account. Success/error UI updates now
+check the current lookup generation. The regression retained the newly selected
+account and sent one action to the originally confirmed target. An ordinary
+same-account action still shows success and clears its draft.
+
+TypeScript, focused ESLint, 13 API/presentation tests, the final webpack production
+build and SEO output validation passed. All new browser writes were intercepted
+fixtures. No full matrix row was promoted. See [structured evidence](qa/admin-ux-20261014.json)
+and the adjacent screenshots; production auth/CORS, real mutations and new
+backend product controls remain the separate release gates above.

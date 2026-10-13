@@ -1,8 +1,16 @@
 "use client";
 import Link from "next/link";
-import { useCallback, useRef, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
+import { IconArrowLeft, IconSend } from "@tabler/icons-react";
 import { useAdmin } from "./auth";
 import { useRemote } from "./hooks";
+import { WorkspaceSkeleton } from "./loading";
 import {
   AdminButton,
   Empty,
@@ -46,6 +54,13 @@ export function SupportPage() {
   const select = (next: string) => {
     setId(next);
   };
+  useEffect(() => {
+    if (id && window.matchMedia("(max-width: 1120px)").matches) {
+      document
+        .getElementById("support-conversation")
+        ?.scrollIntoView({ block: "start", behavior: "auto" });
+    }
+  }, [id]);
   async function send(event: FormEvent) {
     event.preventDefault();
     if (!ticket || !draft.trim() || busyRef.current || uncertain || state.error)
@@ -91,6 +106,7 @@ export function SupportPage() {
           Search support
           <input
             type="search"
+            placeholder="Name, email or ticket number"
             value={query}
             maxLength={100}
             onChange={(event) => setQuery(event.target.value)}
@@ -114,7 +130,10 @@ export function SupportPage() {
               "closed",
             ].map((value) => (
               <option value={value} key={value}>
-                {value.replaceAll("_", " ")}
+                {value === "all"
+                  ? "All statuses"
+                  : value.charAt(0).toUpperCase() +
+                    value.slice(1).replaceAll("_", " ")}
               </option>
             ))}
           </select>
@@ -136,9 +155,7 @@ export function SupportPage() {
           {data && " · Showing the last successful snapshot."}
         </Notice>
       )}
-      {!data && state.loading && (
-        <Notice>Loading support conversations…</Notice>
-      )}
+      {!data && state.loading && <WorkspaceSkeleton kind="support" />}
       {data && (
         <>
           <Metrics
@@ -150,7 +167,10 @@ export function SupportPage() {
           <div className="admin-master-detail admin-support-grid">
             <Panel
               title="Conversations"
-              aside={<span>Up to 80 · Updates every 15s</span>}
+              id="support-inbox"
+              aside={
+                <span>{data.tickets.length} shown · Updates every 15s</span>
+              }
             >
               <div className="admin-record-list">
                 {data.tickets.map((item) => (
@@ -158,6 +178,7 @@ export function SupportPage() {
                     className="admin-record"
                     key={item.id}
                     aria-pressed={id === item.id}
+                    aria-controls="support-conversation"
                     disabled={busy}
                     onClick={() => select(item.id)}
                   >
@@ -183,7 +204,18 @@ export function SupportPage() {
                 <Empty>No conversations match this search.</Empty>
               )}
             </Panel>
-            <Panel title={ticket?.subject || "Conversation"}>
+            <Panel
+              title={ticket?.subject || "Conversation"}
+              id="support-conversation"
+              aside={
+                ticket && (
+                  <a href="#support-inbox" className="admin-back-to-list">
+                    <IconArrowLeft size={16} aria-hidden />
+                    Back to inbox
+                  </a>
+                )
+              }
+            >
               {!ticket ? (
                 <Empty>Select a support conversation.</Empty>
               ) : (
@@ -193,12 +225,10 @@ export function SupportPage() {
                       <strong>{ticket.ticketNumber}</strong>
                       <Status>{ticket.status}</Status>
                     </div>
-                    <dl className="admin-facts">
-                      <Fact label="Customer">{ticket.customer.name}</Fact>
-                      <Fact label="Email">{ticket.customer.email}</Fact>
-                      <Fact label="Role">{ticket.customer.role}</Fact>
-                      <Fact label="Assigned to">{ticket.assignedTo}</Fact>
-                    </dl>
+                    <p className="admin-customer-summary">
+                      <strong>{ticket.customer.name}</strong> ·{" "}
+                      {ticket.customer.role}
+                    </p>
                     {ticket.customer.id && (
                       <Link
                         className="admin-text-link"
@@ -207,6 +237,15 @@ export function SupportPage() {
                         Open account safety record
                       </Link>
                     )}
+                    <details className="admin-context-details">
+                      <summary>Customer details</summary>
+                      <dl className="admin-facts">
+                        <Fact label="Customer">{ticket.customer.name}</Fact>
+                        <Fact label="Email">{ticket.customer.email}</Fact>
+                        <Fact label="Role">{ticket.customer.role}</Fact>
+                        <Fact label="Assigned to">{ticket.assignedTo}</Fact>
+                      </dl>
+                    </details>
                   </div>
                   <ol
                     className="admin-messages"
@@ -261,8 +300,25 @@ export function SupportPage() {
                         }
                         disabled={busy}
                         required
+                        aria-describedby="support-reply-hint"
+                        onKeyDown={(event) => {
+                          if (
+                            event.key === "Enter" &&
+                            (event.metaKey || event.ctrlKey)
+                          ) {
+                            event.preventDefault();
+                            event.currentTarget.form?.requestSubmit();
+                          }
+                        }}
                       />
                     </label>
+                    <div className="admin-compose-hints">
+                      <span id="support-reply-hint">
+                        Reply is visible to the customer · Ctrl / ⌘ + Enter to
+                        send
+                      </span>
+                      <span>{draft.length.toLocaleString()} / 4,000</span>
+                    </div>
                     {notice && <Notice error={uncertain}>{notice}</Notice>}
                     {uncertain && (
                       <AdminButton
@@ -293,6 +349,7 @@ export function SupportPage() {
                           Boolean(state.error)
                         }
                       >
+                        <IconSend size={16} aria-hidden />
                         {busy ? "Sending…" : "Send reply"}
                       </AdminButton>
                     </div>
