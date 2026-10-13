@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque } from "next/font/google";
 import localFont from "next/font/local";
 import type { ReactNode } from "react";
-import { Analytics } from "@vercel/analytics/next";
+import { SiteAnalytics } from "../components/SiteAnalytics";
 import "../styles.css";
 
 const displayFont = Bricolage_Grotesque({
@@ -80,7 +80,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html lang="en-US" data-scroll-behavior="smooth">
       <body className={`${displayFont.variable} ${bodyFont.variable}`}>
         {children}
-        <Analytics />
+        <SiteAnalytics />
       </body>
     </html>
   );

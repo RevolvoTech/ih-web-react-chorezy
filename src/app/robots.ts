@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/", "/verify/", "/reset/", "/invite/"],
+      disallow: ["/api/", "/verify/", "/reset/", "/invite/", "/admin/"],
     },
     sitemap: "https://chorezy.com/sitemap.xml",
     host: "https://chorezy.com",

@@ -4,6 +4,17 @@ import { NextResponse } from "next/server";
 const LAUNCH_COUNTRY = "US";
 
 export function proxy(request: NextRequest) {
+  // Staff can operate from outside the consumer launch region. Data access is
+  // still authorized by Supabase and every Chorezy admin API endpoint.
+  if (
+    request.nextUrl.pathname === "/admin" ||
+    request.nextUrl.pathname.startsWith("/admin/")
+  ) {
+    const response = NextResponse.next();
+    response.headers.set("Cache-Control", "private, no-store");
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+    return response;
+  }
   const country = request.headers.get("x-vercel-ip-country")?.toUpperCase();
 
   // Vercel adds the country header in deployed environments. Its absence keeps
