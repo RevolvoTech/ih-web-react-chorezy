@@ -1,0 +1,126 @@
+{
+  "milestone": "Chorezy admin core workspace",
+  "date": "2026-10-14",
+  "websiteBranch": "qa/chorezy-admin-20261013",
+  "backendBranch": "qa/admin-launch-controls-20261014",
+  "websiteBaseline": "ef8f5bf",
+  "backendBaseline": "7e69a7f",
+  "scope": "Isolated worktrees; no deployment or production provider actions",
+  "checks": {
+    "backend": {
+      "command": "npm test -- --runInBand tests/integration/admin-workspace.test.js tests/unit/support/supportChatRoutes.test.js",
+      "status": "PASS",
+      "suites": 2,
+      "tests": 17,
+      "mongo": "isolated in-memory replica set",
+      "warning": "Mongo shutdown ECONNRESET; exit code 0"
+    },
+    "websiteApi": {
+      "command": "node --test scripts/test-admin-api.mjs",
+      "status": "PASS",
+      "tests": 13
+    },
+    "typecheck": {
+      "command": "npm run typecheck",
+      "status": "PASS",
+      "generatedTypeImports": "normal .next; isolated output also included in tsconfig"
+    },
+    "lint": {
+      "command": "npm run lint",
+      "status": "PASS"
+    },
+    "build": {
+      "command": "CHOREZY_QA_DIST_DIR=.next-admin-qa node node_modules/next/dist/bin/next build --webpack",
+      "status": "PASS",
+      "next": "16.3.2",
+      "staticPages": 38
+    },
+    "seo": {
+      "command": "CHOREZY_QA_DIST_DIR=.next-admin-qa node scripts/validate-seo.mjs",
+      "status": "PASS"
+    },
+    "diffCheck": {
+      "command": "git diff --check",
+      "status": "PASS"
+    }
+  },
+  "browser": {
+    "tool": "Playwright CLI",
+    "session": "admin-launch-20261014",
+    "preview": "http://127.0.0.1:4062",
+    "authAndApi": "fully intercepted synthetic fixtures; all other external traffic blocked",
+    "viewports": [
+      1440,
+      390,
+      320
+    ],
+    "verified": [
+      "Sidebar counts appear after text; support count is unread messages and case count is needs-review work",
+      "Viewing a support ticket caused zero workflow mutations and did not acknowledge unread messages",
+      "One deliberate page acknowledgement produced exactly one fixture workflow mutation and no reply",
+      "Greeting insertion retained a draft; unresolved placeholders disabled send; no template auto-send or auto-close",
+      "Transcript cursor changed original page one to original page two without combining pages",
+      "Evidence link requested explicitly and labelled as a five-minute temporary link; no storage provider request",
+      "Case-reader profile remained visible while finance panels were absent and finance request count was zero",
+      "Settled chore finance denial disabled money selector, hid bid amount and made zero money requests",
+      "Component skeleton visible during delayed profile read",
+      "Failed profile refresh showed an error and retained successful profile data",
+      "Successful empty attention response showed an empty state",
+      "Unknown earnings/payout state did not become a fake $0.00 balance",
+      "2730-character participant report and 2800-character unsent staff draft had no horizontal overflow at 320px",
+      "Read-only staff had disabled reply field and send control, with zero send requests",
+      "Desktop profile displayed persisted finance and payout onboarding state",
+      "Missing server staff metadata triggered the shared denied-access boundary and cleared navigation/private records",
+      "Computed page-heading font was Bricolage Grotesque; body used the local Cereal family",
+      "Visible mobile button targets measured at least 44px"
+    ],
+    "notes": [
+      "The shared auth boundary shows its generic permission/session denial message; the backend has the precise STAFF_PERMISSIONS_UNCONFIGURED code.",
+      "An initial case assertion ran before capability data settled; corrected verification waited for the denial notice.",
+      "A fixture script tried to fill a deliberately disabled read-only reply field; corrected verification asserted disabled state and zero sends.",
+      "A script expected the precise backend provisioning message in the generic auth boundary; corrected verification asserted the actual boundary and cleared private workspace."
+    ],
+    "screenshots": [
+      "output/playwright/admin-launch-support-desktop-20261014.png",
+      "output/playwright/admin-launch-support-mobile-20261014.png",
+      "output/playwright/admin-launch-profile-denied-mobile-20261014.png",
+      "output/playwright/admin-launch-profile-loading-mobile-20261014.png",
+      "output/playwright/admin-launch-profile-error-mobile-20261014.png",
+      "output/playwright/admin-launch-empty-mobile-20261014.png",
+      "output/playwright/admin-launch-support-long-320-20261014.png",
+      "output/playwright/admin-launch-case-denied-320-20261014.png",
+      "output/playwright/admin-launch-profile-finance-desktop-20261014.png",
+      "output/playwright/admin-launch-staff-unconfigured-desktop-20261014.png"
+    ],
+    "browserClosed": true,
+    "fixturePreviewStopped": true,
+    "ownerPreviewsPreserved": [
+      4058,
+      4059
+    ],
+    "committedScreenshots": [
+      "docs/qa/admin-launch-support-desktop-20261014.png",
+      "docs/qa/admin-launch-support-mobile-20261014.png",
+      "docs/qa/admin-launch-profile-denied-mobile-20261014.png",
+      "docs/qa/admin-launch-profile-loading-mobile-20261014.png",
+      "docs/qa/admin-launch-profile-error-mobile-20261014.png",
+      "docs/qa/admin-launch-empty-mobile-20261014.png",
+      "docs/qa/admin-launch-support-long-320-20261014.png",
+      "docs/qa/admin-launch-case-denied-320-20261014.png",
+      "docs/qa/admin-launch-profile-finance-desktop-20261014.png",
+      "docs/qa/admin-launch-staff-unconfigured-desktop-20261014.png"
+    ]
+  },
+  "providerCalls": 0,
+  "realStaffMutations": 0,
+  "fullMatrixRowsPromoted": 0,
+  "pending": [
+    "Real staff capability provisioning/current MFA, deployed CORS and audit key configuration",
+    "Durable investigations, overlap-safe release and renewable preservation/deletion coordination",
+    "Approved deletion/retention hooks and storage race tests",
+    "Restricted-user mobile integration and reviewed emergency boundary",
+    "Legacy Emergency media read audit coverage",
+    "Specific financial holds/release/refund/payout core authorization and sandbox verification",
+    "Recovery queues, chore intervention and scoped evidence export"
+  ]
+}

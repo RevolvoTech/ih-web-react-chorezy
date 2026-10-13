@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   useCallback,
   useEffect,
@@ -10,7 +11,14 @@ import {
 import { IconArrowLeft, IconSend } from "@tabler/icons-react";
 import { useAdmin } from "./auth";
 import { useRemote } from "./hooks";
-import { WorkspaceSkeleton } from "./loading";
+import { DetailSkeleton, WorkspaceSkeleton } from "./loading";
+import { TemplatePicker } from "./template-picker";
+import { unresolvedPlaceholders } from "./templates";
+import { canAct, useWorkspace } from "./workspace-state";
+import { PagedRecords } from "./paged-records";
+import type { SupportTicket } from "./contracts";
+import type { SupportAction } from "./workspace-contracts";
+import { SupportActivityHeartbeat } from "./support-presence";
 import {
   AdminButton,
   Empty,
@@ -25,10 +33,30 @@ import {
 
 export function SupportPage() {
   const { api } = useAdmin();
+  const { authority, refresh: refreshWorkspace } = useWorkspace();
+  const params = useSearchParams();
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("all");
-  const [id, setId] = useState("");
+  const unreadLink = params.get("attention") === "unread";
+  const [statusSelection, setStatusSelection] = useState({
+    unreadLink,
+    value: unreadLink ? "unread" : "all",
+  });
+  const status =
+    statusSelection.unreadLink === unreadLink
+      ? statusSelection.value
+      : unreadLink
+        ? "unread"
+        : "all";
+  const setStatus = (value: string) =>
+    setStatusSelection({ unreadLink, value });
+  const urlTicket = params.get("ticketId") || "";
+  const [selected, setSelected] = useState({ url: urlTicket, id: urlTicket });
+  const id = selected.url === urlTicket ? selected.id : urlTicket;
+  const setId = (value: string) => setSelected({ url: urlTicket, id: value });
+  const [inboxCursors, setInboxCursors] = useState([""]);
+  const [messageCursors, setMessageCursors] = useState([""]);
+  const replyKeys = useRef<Record<string, { body: string; key: string }>>({});
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
@@ -36,23 +64,45 @@ export function SupportPage() {
     Record<string, { notice: string; requiredVersion?: number }>
   >({});
   const load = useCallback(
-    () => api.support(search, status),
-    [api, search, status],
+    () => api.support(search, status, inboxCursors.at(-1)!),
+    [api, search, status, inboxCursors],
   );
-  const state = useRemote(load, `support:${search}:${status}`, true);
+  const state = useRemote(
+    load,
+    `support:${search}:${status}:${inboxCursors.at(-1)}`,
+    true,
+  );
   const data = state.data;
-  const ticket = data?.tickets.find((item) => item.id === id);
+  const loadDetail = useCallback(
+    async () =>
+      id
+        ? {
+            ticket: await api.supportTicket(id),
+            messages: await api.supportMessages(id, messageCursors.at(-1)!),
+          }
+        : null,
+    [api, id, messageCursors],
+  );
+  const details = useRemote(
+    loadDetail,
+    `ticket:${id}:${messageCursors.at(-1)}`,
+    true,
+  );
+  const ticket = details.data?.ticket;
+  const messages = details.data?.messages.items || [];
+  const permitted = canAct(authority, "support.write");
   const draft = drafts[id] || "";
   const receipt = receipts[id];
   const notice = receipt?.notice || "";
   const uncertain = receipt?.requiredVersion !== undefined;
   const canCheckDelivery =
     uncertain &&
-    !state.loading &&
-    !state.error &&
-    state.version >= receipt.requiredVersion!;
+    !details.loading &&
+    !details.error &&
+    details.version >= receipt.requiredVersion!;
   const select = (next: string) => {
     setId(next);
+    setMessageCursors([""]);
   };
   useEffect(() => {
     if (id && window.matchMedia("(max-width: 1120px)").matches) {
@@ -63,7 +113,15 @@ export function SupportPage() {
   }, [id]);
   async function send(event: FormEvent) {
     event.preventDefault();
-    if (!ticket || !draft.trim() || busyRef.current || uncertain || state.error)
+    if (
+      !ticket ||
+      !draft.trim() ||
+      busyRef.current ||
+      uncertain ||
+      details.error ||
+      !permitted ||
+      unresolvedPlaceholders(draft)
+    )
       return;
     const target = ticket.id;
     const body = draft.trim();
@@ -71,15 +129,24 @@ export function SupportPage() {
     setBusy(true);
     setReceipts((previous) => ({ ...previous, [target]: { notice: "" } }));
     try {
-      await api.reply(target, body);
+      const previousKey = replyKeys.current[target];
+      const request =
+        previousKey?.body === body
+          ? previousKey
+          : { body, key: crypto.randomUUID() };
+      replyKeys.current[target] = request;
+      await api.reply(target, body, request.key);
+      delete replyKeys.current[target];
       setDrafts((previous) => ({ ...previous, [target]: "" }));
       setReceipts((previous) => ({
         ...previous,
         [target]: { notice: "Reply sent." },
       }));
       state.refresh();
+      details.refresh();
+      refreshWorkspace();
     } catch (error) {
-      const requiredVersion = state.refresh();
+      const requiredVersion = details.refresh();
       setReceipts((previous) => ({
         ...previous,
         [target]: {
@@ -94,11 +161,13 @@ export function SupportPage() {
   }
   return (
     <>
+      <SupportActivityHeartbeat />
       <form
         className="admin-toolbar"
         onSubmit={(event) => {
           event.preventDefault();
           setSearch(query.trim());
+          setInboxCursors([""]);
           select("");
         }}
       >
@@ -118,11 +187,13 @@ export function SupportPage() {
             value={status}
             onChange={(event) => {
               setStatus(event.target.value);
+              setInboxCursors([""]);
               select("");
             }}
           >
             {[
               "all",
+              "unread",
               "open",
               "in_progress",
               "waiting",
@@ -144,7 +215,10 @@ export function SupportPage() {
         <AdminButton
           variant="secondary"
           disabled={state.loading}
-          onClick={state.refresh}
+          onClick={() => {
+            state.refresh();
+            details.refresh();
+          }}
         >
           {state.loading ? "Refreshing…" : "Refresh"}
         </AdminButton>
@@ -203,6 +277,25 @@ export function SupportPage() {
               {!data.tickets.length && (
                 <Empty>No conversations match this search.</Empty>
               )}
+              <div className="admin-actions">
+                <AdminButton
+                  variant="secondary"
+                  disabled={state.loading || inboxCursors.length === 1}
+                  onClick={() => setInboxCursors(inboxCursors.slice(0, -1))}
+                >
+                  Previous page
+                </AdminButton>
+                <AdminButton
+                  variant="secondary"
+                  disabled={state.loading || !data.nextCursor}
+                  onClick={() => {
+                    if (data.nextCursor)
+                      setInboxCursors([...inboxCursors, data.nextCursor]);
+                  }}
+                >
+                  Next page
+                </AdminButton>
+              </div>
             </Panel>
             <Panel
               title={ticket?.subject || "Conversation"}
@@ -216,7 +309,15 @@ export function SupportPage() {
                 )
               }
             >
-              {!ticket ? (
+              {details.error && (
+                <Notice error>
+                  {details.error}
+                  {ticket && " · Showing the last successful conversation."}
+                </Notice>
+              )}
+              {id && !ticket && details.loading ? (
+                <DetailSkeleton label="Loading support conversation" />
+              ) : !ticket ? (
                 <Empty>Select a support conversation.</Empty>
               ) : (
                 <>
@@ -237,6 +338,14 @@ export function SupportPage() {
                         Open account safety record
                       </Link>
                     )}
+                    {typeof ticket.context?.choreId === "string" && (
+                      <Link
+                        className="admin-text-link"
+                        href={`/admin/cases/?choreId=${encodeURIComponent(ticket.context.choreId)}`}
+                      >
+                        Open chore case file
+                      </Link>
+                    )}
                     <details className="admin-context-details">
                       <summary>Customer details</summary>
                       <dl className="admin-facts">
@@ -251,7 +360,7 @@ export function SupportPage() {
                     className="admin-messages"
                     aria-label="Support conversation"
                   >
-                    {ticket.messages.map((message) => (
+                    {messages.map((message) => (
                       <li key={message.id} data-sender={message.senderType}>
                         <div className="admin-message-meta">
                           <strong>
@@ -282,9 +391,42 @@ export function SupportPage() {
                       </li>
                     ))}
                   </ol>
-                  {!ticket.messages.length && (
-                    <Empty>No messages recorded.</Empty>
-                  )}
+                  {!messages.length && <Empty>No messages recorded.</Empty>}
+                  <div className="admin-actions">
+                    <AdminButton
+                      variant="secondary"
+                      disabled={details.loading || messageCursors.length === 1}
+                      onClick={() =>
+                        setMessageCursors(messageCursors.slice(0, -1))
+                      }
+                    >
+                      Previous messages
+                    </AdminButton>
+                    <AdminButton
+                      variant="secondary"
+                      disabled={
+                        details.loading || !details.data?.messages.nextCursor
+                      }
+                      onClick={() => {
+                        const next = details.data?.messages.nextCursor;
+                        if (next) setMessageCursors([...messageCursors, next]);
+                      }}
+                    >
+                      Next messages
+                    </AdminButton>
+                    <span>Message page {messageCursors.length}</span>
+                  </div>
+                  <SupportWorkflow
+                    key={ticket.id}
+                    ticket={ticket}
+                    throughMessageId={messages.at(-1)?.id}
+                    disabled={!permitted || busy || Boolean(details.error)}
+                    onChanged={() => {
+                      details.refresh();
+                      state.refresh();
+                      refreshWorkspace();
+                    }}
+                  />
                   <form className="admin-reply" onSubmit={send}>
                     <label>
                       Reply to {ticket.customer.name}
@@ -298,7 +440,7 @@ export function SupportPage() {
                             [id]: event.target.value,
                           }))
                         }
-                        disabled={busy}
+                        disabled={busy || !permitted}
                         required
                         aria-describedby="support-reply-hint"
                         onKeyDown={(event) => {
@@ -312,6 +454,34 @@ export function SupportPage() {
                         }}
                       />
                     </label>
+                    <TemplatePicker
+                      key={ticket.id}
+                      kind="support"
+                      context={{
+                        name: ticket.customer.name,
+                        choreId:
+                          typeof ticket.context?.choreId === "string"
+                            ? ticket.context.choreId
+                            : undefined,
+                      }}
+                      value={draft}
+                      onInsert={(body) =>
+                        setDrafts((previous) => ({ ...previous, [id]: body }))
+                      }
+                      disabled={busy || !permitted}
+                    />
+                    {unresolvedPlaceholders(draft) && (
+                      <Notice error>
+                        Edit all template placeholders before sending.
+                      </Notice>
+                    )}
+                    {!permitted && (
+                      <Notice>
+                        Your staff account needs the support.write capability to
+                        send replies or change ticket workflow. An authorized
+                        owner can configure this in staff authority.
+                      </Notice>
+                    )}
                     <div className="admin-compose-hints">
                       <span id="support-reply-hint">
                         Reply is visible to the customer · Ctrl / ⌘ + Enter to
@@ -337,8 +507,7 @@ export function SupportPage() {
                     )}
                     <div className="admin-actions">
                       <p>
-                        Visible to the customer. Internal notes are added in
-                        Safety.
+                        Visible to the customer. Internal notes are separate.
                       </p>
                       <AdminButton
                         type="submit"
@@ -346,7 +515,9 @@ export function SupportPage() {
                           busy ||
                           !draft.trim() ||
                           uncertain ||
-                          Boolean(state.error)
+                          Boolean(details.error) ||
+                          !permitted ||
+                          unresolvedPlaceholders(draft)
                         }
                       >
                         <IconSend size={16} aria-hidden />
@@ -366,5 +537,184 @@ export function SupportPage() {
         </>
       )}
     </>
+  );
+}
+
+function SupportWorkflow({
+  ticket,
+  throughMessageId,
+  disabled,
+  onChanged,
+}: {
+  ticket: SupportTicket;
+  throughMessageId?: string;
+  disabled: boolean;
+  onChanged: () => void;
+}) {
+  const { api } = useAdmin();
+  const [reason, setReason] = useState("");
+  const [priority, setPriority] = useState(ticket.priority);
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+  const lock = useRef(false);
+  const [notice, setNotice] = useState("");
+  const [failed, setFailed] = useState(false);
+  const [notesVersion, setNotesVersion] = useState(0);
+  const noteKey = useRef<{ body: string; key: string } | null>(null);
+  const loadNotes = useCallback(
+    (cursor: string) => api.supportNotes(ticket.id, cursor),
+    [api, ticket.id],
+  );
+  async function apply(action: SupportAction["action"]) {
+    if (disabled || lock.current) return;
+    lock.current = true;
+    setBusy(true);
+    setNotice("");
+    setFailed(false);
+    try {
+      const payload: SupportAction = {
+        action,
+        expectedVersion: ticket.version,
+        reason,
+        priority,
+        throughMessageId,
+      };
+      if (action === "note") {
+        const request =
+          noteKey.current?.body === note
+            ? noteKey.current
+            : { body: note, key: crypto.randomUUID() };
+        noteKey.current = request;
+        payload.body = note;
+        payload.clientRequestId = request.key;
+      }
+      await api.supportWorkflow(ticket.id, payload);
+      setNotice(
+        action === "resolve"
+          ? "Ticket resolved. A customer reply reopens it; no closing message was sent."
+          : "Workflow updated.",
+      );
+      if (action === "note") {
+        setNote("");
+        noteKey.current = null;
+        setNotesVersion((version) => version + 1);
+      }
+      onChanged();
+    } catch (error) {
+      setFailed(true);
+      setNotice(
+        error instanceof Error
+          ? error.message
+          : "Workflow could not be confirmed. Refresh before retrying.",
+      );
+      onChanged();
+    } finally {
+      setBusy(false);
+      lock.current = false;
+    }
+  }
+  return (
+    <details className="admin-context-details">
+      <summary>Ticket workflow and internal notes</summary>
+      <p>
+        Resolution preserves chat history. Closing text is optional.
+        Availability is separate from ticket status.
+      </p>
+      <label>
+        Reason for workflow change
+        <input
+          value={reason}
+          maxLength={1000}
+          onChange={(event) => setReason(event.target.value)}
+          disabled={disabled || busy}
+        />
+      </label>
+      <label>
+        Priority
+        <select
+          value={priority}
+          disabled={disabled || busy}
+          onChange={(event) => setPriority(event.target.value)}
+        >
+          {["low", "medium", "high", "urgent"].map((value) => (
+            <option key={value} value={value}>
+              {value}
+            </option>
+          ))}
+        </select>
+      </label>
+      <div className="admin-actions">
+        <AdminButton
+          variant="secondary"
+          disabled={disabled || busy || !throughMessageId}
+          onClick={() => void apply("mark_read")}
+        >
+          Mark this page read
+        </AdminButton>
+        {["resolve", "reopen", "assign_self", "unassign", "priority"].map(
+          (action) => (
+            <AdminButton
+              key={action}
+              variant="secondary"
+              disabled={disabled || busy || reason.trim().length < 5}
+              onClick={() => void apply(action as SupportAction["action"])}
+            >
+              {
+                {
+                  resolve: "Resolve ticket",
+                  reopen: "Reopen ticket",
+                  assign_self: "Assign to me",
+                  unassign: "Release my assignment",
+                  priority: "Set priority",
+                }[action]
+              }
+            </AdminButton>
+          ),
+        )}
+      </div>
+      <label>
+        Internal staff note
+        <textarea
+          rows={4}
+          value={note}
+          maxLength={4000}
+          onChange={(event) => setNote(event.target.value)}
+          disabled={disabled || busy}
+        />
+      </label>
+      <TemplatePicker
+        kind="internal"
+        value={note}
+        onInsert={setNote}
+        disabled={disabled || busy}
+      />
+      <AdminButton
+        variant="secondary"
+        disabled={
+          disabled ||
+          busy ||
+          !note.trim() ||
+          reason.trim().length < 5 ||
+          unresolvedPlaceholders(note)
+        }
+        onClick={() => void apply("note")}
+      >
+        Add internal note
+      </AdminButton>
+      {notice && <Notice error={failed}>{notice}</Notice>}
+      <PagedRecords
+        key={`${ticket.id}:${notesVersion}`}
+        title="Staff notes"
+        scope={`ticket:${ticket.id}:notes`}
+        load={loadNotes}
+        render={(record) => (
+          <>
+            <strong>{record.actorName}</strong>
+            <small>{time(record.createdAt)}</small>
+            <p className="admin-preserve-lines">{record.body}</p>
+          </>
+        )}
+      />
+    </details>
   );
 }

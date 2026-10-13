@@ -1,18 +1,14 @@
-/** Planning contracts only. These are not API endpoints or implemented controls. */
+/** Remaining contracts only; implemented core workspace features are documented in docs/admin-workspace.md. */
 export type AdminContractGap = {
   feature:
     | "investigation"
     | "evidence_preservation"
     | "payment_hold"
-    | "case_file"
-    | "marketplace_transcript"
     | "money_timeline"
     | "failed_operations"
     | "restricted_support"
     | "chore_intervention"
-    | "evidence_export"
-    | "support_workflow"
-    | "staff_permissions";
+    | "evidence_export";
   requiredAuthority: string;
   missingContracts: readonly string[];
   verificationGate: string;
@@ -22,126 +18,78 @@ export const adminContractGaps: readonly AdminContractGap[] = [
     feature: "investigation",
     requiredAuthority: "Chorezy backend",
     missingContracts: [
-      "Case creation/read/update",
-      "Until-released restriction policy",
-      "Linked people/chore/payment IDs",
-      "Audited release without lifting unrelated restrictions",
+      "Durable until-released investigation freeze",
+      "Audited release preserving overlapping restrictions",
+      "Linked investigation lifecycle",
     ],
-    verificationGate: "AM61 full scope, owner expiry policy",
+    verificationGate: "Restriction concurrency, appeal and emergency access",
   },
   {
     feature: "evidence_preservation",
     requiredAuthority: "Chorezy backend/storage",
     missingContracts: [
-      "Scoped preservation snapshot",
-      "Deletion/retention guards across chats, media, accounts and payments",
-      "Audited hold release",
+      "Durable scoped holds",
+      "Shared renewable preservation/deletion leases",
+      "Deletion and retention guards for approved record/media/account hooks",
     ],
-    verificationGate: "Retention and authorization regression checks; AM61",
+    verificationGate: "Competing hold/delete and storage race tests",
   },
   {
     feature: "payment_hold",
-    requiredAuthority: "Chorezy backend payment ledger",
+    requiredAuthority: "Chorezy payment ledger",
     missingContracts: [
-      "Specific settlement hold",
-      "Hold/release/refund state machine",
-      "Idempotent actions and reconciliation",
+      "Specific settlement hold/release/refund policy",
+      "Idempotent financial state machine and reconciliation",
     ],
     verificationGate:
-      "AM62; no duplicate refund/release, unrelated money unchanged",
-  },
-  {
-    feature: "case_file",
-    requiredAuthority: "Chorezy backend",
-    missingContracts: [
-      "Unified case lookup",
-      "Scoped record pagination",
-      "Provider/context correlation",
-    ],
-    verificationGate: "Complete records and staff access boundaries",
-  },
-  {
-    feature: "marketplace_transcript",
-    requiredAuthority: "Chorezy backend",
-    missingContracts: [
-      "Full chore-conversation messages",
-      "Attachment/audio viewing authorization",
-      "Guardian approval state",
-    ],
-    verificationGate:
-      "Restricted staff access, full pagination, retention redactions",
+      "Separate owner authorization and owned provider sandbox checks",
   },
   {
     feature: "money_timeline",
-    requiredAuthority: "Chorezy backend",
+    requiredAuthority: "Chorezy payment ledger",
     missingContracts: [
-      "Reconciled escrow, wallet, provider transfer/payout/refund timeline",
-      "Provider references",
-      "Explicit monetary units",
+      "Provider payout/recovery reconciliation beyond persisted references",
+      "Complete cross-ledger correlation of unlinked account payouts",
     ],
-    verificationGate: "Cross-ledger reconciliation with sandbox fixtures",
+    verificationGate:
+      "Financial unit/correlation and owned sandbox reconciliation checks",
   },
   {
     feature: "failed_operations",
-    requiredAuthority: "Chorezy backend workers",
+    requiredAuthority: "Chorezy workers",
     missingContracts: [
       "Stuck operation queue",
-      "Lease/attempt state",
-      "Idempotent recovery action",
+      "Lease/attempt state and idempotent recovery",
     ],
-    verificationGate: "Lost acknowledgement/retry cannot charge or send twice",
+    verificationGate: "Lost acknowledgement cannot charge or send twice",
   },
   {
     feature: "restricted_support",
     requiredAuthority: "Chorezy backend and mobile app",
     missingContracts: [
-      "Limited-session support/appeal capability",
-      "Restriction explanation",
-      "Emergency capability for affected users",
+      "Mobile integration for the implemented limited support challenge/session",
+      "Reviewed emergency boundary for restricted accounts",
     ],
-    verificationGate: "Cannot access marketplace or bypass restriction; AM61",
+    verificationGate:
+      "No marketplace bypass; own-ticket/appeal/emergency access",
   },
   {
     feature: "chore_intervention",
     requiredAuthority: "Chorezy backend",
     missingContracts: [
       "Authorized pause/cancel/escalation",
-      "Participants notified",
-      "Financial policy and recorded reason",
+      "Recorded reason, notifications and financial policy",
     ],
-    verificationGate: "Role/lifecycle/settlement/emergency interaction",
+    verificationGate: "Role, lifecycle, settlement and emergency interactions",
   },
   {
     feature: "evidence_export",
     requiredAuthority: "Chorezy backend",
     missingContracts: [
-      "Authorized scoped original-record export",
-      "Export history and integrity manifest",
-      "Temporary signed downloads",
+      "Scoped original-record export",
+      "Integrity manifest and export history",
+      "Sharing and privacy policy",
     ],
-    verificationGate:
-      "No broad database export; legal/privacy sharing policy confirmed",
-  },
-  {
-    feature: "support_workflow",
-    requiredAuthority: "Chorezy backend",
-    missingContracts: [
-      "Resolve/reopen",
-      "Priority and assignment changes",
-      "Ticket internal notes",
-      "Idempotent reply request IDs",
-    ],
-    verificationGate: "Audited ownership and duplicate-request tests",
-  },
-  {
-    feature: "staff_permissions",
-    requiredAuthority: "Supabase staff authority and Chorezy backend",
-    missingContracts: [
-      "Read/support/safety/finance role capabilities",
-      "Privileged permanent/device/IP enforcement",
-      "Action-specific authorization",
-    ],
-    verificationGate:
-      "Backend currently checks a single is_admin predicate; granular roles need backend enforcement",
+    verificationGate: "Separate export authority; no broad database export",
   },
 ];

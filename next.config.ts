@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Isolate local fixture builds while the owner's preview remains running.
+  distDir: process.env.CHOREZY_QA_DIST_DIR || ".next",
   poweredByHeader: false,
   reactStrictMode: true,
   // Canonical metadata, internal links, and the sitemap all use trailing

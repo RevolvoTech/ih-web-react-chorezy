@@ -9,11 +9,29 @@ import type {
   SafetyPayload,
   SafetyResponse,
   SupportInbox,
+  SupportTicket,
   SupportMessage,
   TrustCase,
   TrustDashboard,
   TrustEvent,
 } from "./contracts";
+import type {
+  Page,
+  StaffAuthority,
+  AttentionCounts,
+  AttentionRecord,
+  LookupRecord,
+  ChoreCaseFile,
+  CaseConversation,
+  MarketplaceMessage,
+  MoneyRecord,
+  InternalNote,
+  SupportAction,
+  AuditEvent,
+  LinkedRecord,
+  UserProfile,
+  UserFinance,
+} from "./workspace-contracts";
 
 export class AdminApiError extends Error {
   constructor(
@@ -95,7 +113,16 @@ export function createAdminApi(
     });
     const body = await response.json().catch(() => null);
     if (!response.ok || body?.success === false) {
-      if ([401, 403].includes(response.status) && typeof window !== "undefined")
+      if (
+        (response.status === 401 ||
+          (response.status === 403 &&
+            ![
+              "STAFF_CAPABILITY_REQUIRED",
+              "STAFF_MFA_REQUIRED",
+              "TICKET_OWNER_REQUIRED",
+            ].includes(body?.code))) &&
+        typeof window !== "undefined"
+      )
         window.dispatchEvent(new Event("chorezy-admin-access-revoked"));
       throw new AdminApiError(
         response.status,
@@ -126,14 +153,97 @@ export function createAdminApi(
   return {
     overview: (days = 30) =>
       data<Geography>(`/platform-analytics/world-domination${query({ days })}`),
-    support: (search = "", status = "all") =>
-      request<SupportInbox>(
-        `/support-chat/tickets${query({ query: search, status })}`,
+    staffAuthority: () => data<StaffAuthority>("/workspace/me"),
+    supportPresence: (payload: { sessionId: string; sequence: number }) =>
+      data<{
+        lastActiveAt: string;
+        checkedAt: string;
+        heartbeatExpirySeconds: number;
+      }>("/workspace/support-presence", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+    attentionCounts: () => data<AttentionCounts>("/workspace/attention/counts"),
+    attention: (kind: string, cursor = "") =>
+      data<Page<AttentionRecord>>(
+        `/workspace/attention/${encodeURIComponent(kind)}${query({ cursor })}`,
       ),
-    reply: (ticketId: string, body: string) =>
+    lookup: (identifier: string) =>
+      data<LookupRecord[]>(`/workspace/lookup${query({ identifier })}`),
+    choreCase: (id: string) =>
+      data<ChoreCaseFile>(`/workspace/chores/${encodeURIComponent(id)}`),
+    caseEvidence: (
+      id: string,
+      payload: {
+        group: string;
+        index: number;
+        conversationId?: string;
+        messageId?: string;
+      },
+    ) =>
+      data<{ url: string; expiresAt: string; type: string; filename: string }>(
+        `/workspace/chores/${encodeURIComponent(id)}/evidence/access`,
+        { method: "POST", body: JSON.stringify(payload) },
+      ),
+    caseConversations: (id: string, cursor = "") =>
+      data<Page<CaseConversation>>(
+        `/workspace/chores/${encodeURIComponent(id)}/conversations${query({ cursor })}`,
+      ),
+    caseMessages: (id: string, conversation: string, cursor = "") =>
+      data<Page<MarketplaceMessage>>(
+        `/workspace/chores/${encodeURIComponent(id)}/conversations/${encodeURIComponent(conversation)}/messages${query({ cursor })}`,
+      ),
+    caseMoney: (id: string, kind: string, cursor = "") =>
+      data<Page<MoneyRecord> & { correlationNote: string }>(
+        `/workspace/chores/${encodeURIComponent(id)}/money/${encodeURIComponent(kind)}${query({ cursor })}`,
+      ),
+    caseRecords: (id: string, kind: string, cursor = "") =>
+      data<Page<LinkedRecord>>(
+        `/workspace/chores/${encodeURIComponent(id)}/records/${encodeURIComponent(kind)}${query({ cursor })}`,
+      ),
+    userProfile: (id: string) =>
+      data<UserProfile>(`/workspace/users/${encodeURIComponent(id)}/profile`),
+    userFinance: (id: string) =>
+      data<UserFinance>(`/workspace/users/${encodeURIComponent(id)}/finance`),
+    userTransactions: (id: string, cursor = "") =>
+      data<Page<MoneyRecord>>(
+        `/workspace/users/${encodeURIComponent(id)}/transactions${query({ cursor })}`,
+      ),
+    userChores: (id: string, cursor = "") =>
+      data<Page<{ id: string; title: string; status: string; role: string }>>(
+        `/workspace/users/${encodeURIComponent(id)}/chores${query({ cursor })}`,
+      ),
+    userVerification: (id: string, kind: string, cursor = "") =>
+      data<Page<Record<string, unknown>> & { providerNote: string }>(
+        `/workspace/users/${encodeURIComponent(id)}/verification/${encodeURIComponent(kind)}${query({ cursor })}`,
+      ),
+    audit: (scopeType: string, scopeId: string, cursor = "") =>
+      data<Page<AuditEvent>>(
+        `/workspace/audit/${encodeURIComponent(scopeType)}/${encodeURIComponent(scopeId)}${query({ cursor })}`,
+      ),
+    supportMessages: (id: string, cursor = "") =>
+      data<Page<SupportMessage>>(
+        `/support-chat/tickets/${encodeURIComponent(id)}/messages${query({ cursor })}`,
+      ),
+    supportTicket: (id: string) =>
+      data<SupportTicket>(`/support-chat/tickets/${encodeURIComponent(id)}`),
+    supportNotes: (id: string, cursor = "") =>
+      data<Page<InternalNote>>(
+        `/support-chat/tickets/${encodeURIComponent(id)}/notes${query({ cursor })}`,
+      ),
+    supportWorkflow: (id: string, payload: SupportAction) =>
+      data<{ version?: number; noteId?: string; replayed?: boolean }>(
+        `/support-chat/tickets/${encodeURIComponent(id)}/workflow`,
+        { method: "POST", body: JSON.stringify(payload) },
+      ),
+    support: (search = "", status = "all", cursor = "") =>
+      request<SupportInbox>(
+        `/support-chat/tickets${query({ query: search, status: status === "unread" ? "all" : status, unread: status === "unread" ? "true" : "false", cursor, includeMessages: "false" })}`,
+      ),
+    reply: (ticketId: string, body: string, clientRequestId: string) =>
       request<{ message: SupportMessage }>(
         `/support-chat/tickets/${encodeURIComponent(ticketId)}/messages`,
-        { method: "POST", body: JSON.stringify({ body }) },
+        { method: "POST", body: JSON.stringify({ body, clientRequestId }) },
       ),
     safety: (identifier: string) =>
       data<SafetyContext>(`/safety/context${query({ identifier })}`),

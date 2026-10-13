@@ -19,10 +19,13 @@ export interface SupportMessage {
   senderName?: string;
   deliveryStatus?: string;
   createdAt: string;
+  clientRequestId?: string;
   attachments?: { url?: string; name?: string; type?: string }[];
 }
 export interface SupportTicket {
   id: string;
+  version: number;
+  assignedAgentId?: string;
   ticketNumber: string;
   subject: string;
   status: string;
@@ -39,6 +42,7 @@ export interface SupportTicket {
 export interface SupportInbox {
   tickets: SupportTicket[];
   metrics: { open: number; urgent: number };
+  nextCursor?: string | null;
 }
 export interface SafetyAction {
   id: string;
@@ -79,6 +83,7 @@ export interface SafetyPayload {
   };
 }
 export interface SafetyContext {
+  financeAccess?: boolean;
   user: Person & {
     verification?: Record<string, RecordValue>;
     sessions?: { activeCount: number };
@@ -88,7 +93,7 @@ export interface SafetyContext {
     activeRestrictions: number;
     openChores: number;
     openSupportTickets: number;
-    paymentIssues: number;
+    paymentIssues?: number;
   };
   signals: {
     deviceIds: string[];
@@ -99,8 +104,8 @@ export interface SafetyContext {
   activeRestrictions: SafetyAction[];
   chores: SafetyRecord[];
   conversations: SafetyRecord[];
-  payments: SafetyRecord[];
-  transactions: SafetyRecord[];
+  payments?: SafetyRecord[];
+  transactions?: SafetyRecord[];
   supportTickets: SafetyRecord[];
 }
 export interface SafetyRecord {

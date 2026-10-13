@@ -126,6 +126,16 @@ html:has(.chorezy-admin) {
   grid-template-columns: 250px minmax(0, 1fr);
   min-height: 100dvh;
 }
+.admin-nav-count { margin-left: auto; min-width: 24px; padding: 2px 7px; border-radius: var(--admin-radius); background: var(--surface-blue); font-size: .78rem; text-align: center; font-variant-numeric: tabular-nums; }
+.admin-case-records { list-style: none; padding: 0; margin: 0 0 16px; }
+.admin-case-records > li { padding: 16px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.admin-case-records small, .admin-case-records time, .admin-case-records code { display: block; }
+.admin-case-records code { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .8rem; }
+.admin-preserve-lines { white-space: pre-wrap; overflow-wrap: anywhere; }
+.admin-templates { margin-block: 12px; }
+.admin-templates label { margin-block: 12px; }
+.admin-evidence-access { display: grid; gap: 12px; margin-top: 12px; }
+.admin-evidence-access audio { max-width: 100%; }
 .admin-sidebar {
   position: sticky;
   top: 0;

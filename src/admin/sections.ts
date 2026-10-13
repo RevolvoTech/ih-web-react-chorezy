@@ -1,4 +1,6 @@
 export const adminSections = [
+  "attention",
+  "cases",
   "overview",
   "support",
   "safety",

@@ -12,12 +12,23 @@ import {
   IconLogout,
   IconSearch,
   IconArrowUpRight,
+  IconFolderSearch,
 } from "@tabler/icons-react";
 import { useState, type ReactNode } from "react";
 import { useAdmin } from "./auth";
 import { AdminButton } from "./ui";
+import { WorkspaceProvider, useWorkspace } from "./workspace-state";
 
 const sections = [
+  {
+    slug: "cases",
+    title: "Case files",
+    icon: IconFolderSearch,
+    description:
+      "Find a chore and inspect participant chat, evidence and linked money records.",
+    accent: "blue",
+    group: "Workspace",
+  },
   {
     slug: "overview",
     title: "Account overview",
@@ -69,10 +80,23 @@ const sections = [
 ];
 export const adminSections = sections.map((item) => item.slug);
 export function AdminShell({ children }: { children: ReactNode }) {
+  return (
+    <WorkspaceProvider>
+      <WorkspaceShell>{children}</WorkspaceShell>
+    </WorkspaceProvider>
+  );
+}
+function WorkspaceShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [lookup, setLookup] = useState("");
   const { email, signOut } = useAdmin();
+  const { counts, countsError } = useWorkspace();
+  const navCounts: Record<string, number | undefined> = {
+    cases: counts?.casesNeedingAttention,
+    support: counts?.supportUnreadMessages,
+    emergency: counts?.emergencyUnresolved,
+  };
   const active =
     sections.find((item) => pathname.startsWith(`/admin/${item.slug}`)) ||
     sections[0];
@@ -95,14 +119,33 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 <p className="admin-nav-group">{item.group}</p>
               )}
               <Link
-                href={`/admin/${item.slug}/`}
+                href={
+                  item.slug === "support"
+                    ? "/admin/support/?attention=unread"
+                    : item.slug === "cases"
+                      ? "/admin/cases/?attention=case"
+                      : item.slug === "emergency"
+                        ? "/admin/emergency/?attention=unresolved"
+                        : `/admin/${item.slug}/`
+                }
                 data-accent={item.accent}
                 aria-current={item.slug === active.slug ? "page" : undefined}
               >
                 <span className="admin-nav-icon">
                   <item.icon size={21} stroke={1.7} aria-hidden />
                 </span>
-                <span>{item.title}</span>
+                <span>
+                  {item.title}
+                  {navCounts[item.slug] !== undefined && (
+                    <span
+                      aria-label={`${navCounts[item.slug]} ${item.slug === "support" ? "unread messages" : item.slug === "emergency" ? "unresolved incidents" : "cases needing attention"}${countsError ? ", last successful count" : ""}`}
+                    >
+                      {" "}
+                      ({navCounts[item.slug]}
+                      {countsError ? "*" : ""})
+                    </span>
+                  )}
+                </span>
               </Link>
             </div>
           ))}
@@ -124,20 +167,20 @@ export function AdminShell({ children }: { children: ReactNode }) {
               event.preventDefault();
               if (lookup.trim())
                 router.push(
-                  `/admin/safety/?identifier=${encodeURIComponent(lookup.trim())}`,
+                  `/admin/cases/?identifier=${encodeURIComponent(lookup.trim())}`,
                 );
             }}
           >
             <label>
               <span className="visually-hidden">
-                Find an account by email, phone or ID
+                Find a user, chore, ticket, payment or case
               </span>
               <IconSearch size={19} aria-hidden />
               <input
                 type="search"
                 value={lookup}
                 onChange={(event) => setLookup(event.target.value)}
-                placeholder="Find an account · email, phone or ID"
+                placeholder="Find a user, chore, ticket, payment or case"
                 maxLength={160}
                 required
               />

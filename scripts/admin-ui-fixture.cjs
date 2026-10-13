@@ -50,7 +50,14 @@ module.exports = async (page) => {
     actions: [],
     releaseCount: 0,
   };
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- Node CLI fixture helper.
+  const workspaceFixture = require("./admin-workspace-fixture.cjs")(
+    state,
+    person,
+    at,
+  );
   const safety = () => ({
+    financeAccess: state.capabilities.includes("finance.read"),
     user: person,
     matches: [person],
     signals: {
@@ -220,6 +227,12 @@ module.exports = async (page) => {
         calls: state.calls,
         actionCount: state.actions.length,
         releaseCount: state.releaseCount,
+        messages: state.messages,
+        notes: state.notes,
+        readAcknowledged: state.readAcknowledged === true,
+        capabilities: state.capabilities,
+        providerCalls: 0,
+        realStaffMutations: 0,
       });
     }
     const path = url.pathname.replace("/api/v1/admin", "");
@@ -242,6 +255,7 @@ module.exports = async (page) => {
       );
     if (path === "/support-chat/tickets" && state.emptySupport)
       return reply({ tickets: [], metrics: { open: 0, urgent: 0 } });
+    if (await workspaceFixture({ path, url, request, reply })) return;
     if (path === "/platform-analytics/world-domination")
       return reply({
         data: {

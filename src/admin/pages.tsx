@@ -1,11 +1,15 @@
 "use client";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useState } from "react";
 import { IconRefresh } from "@tabler/icons-react";
 import { useAdmin } from "./auth";
 import { useRemote } from "./hooks";
+import { canAct, useWorkspace } from "./workspace-state";
 import { SafetyPage } from "./safety";
 import { SupportPage } from "./support";
+import { AttentionPage } from "./attention";
+import { CasesPage } from "./cases";
 import { DetailSkeleton, WorkspaceSkeleton } from "./loading";
 import {
   AdminButton,
@@ -24,8 +28,16 @@ import {
 import type { EmergencyIncident, TrustCase } from "./contracts";
 
 export function AdminSection({ section }: { section: string }) {
-  return section === "support" ? (
-    <SupportPage />
+  return section === "attention" ? (
+    <AttentionPage />
+  ) : section === "cases" ? (
+    <Suspense fallback={<DetailSkeleton />}>
+      <CasesPage />
+    </Suspense>
+  ) : section === "support" ? (
+    <Suspense fallback={<WorkspaceSkeleton kind="support" />}>
+      <SupportPage />
+    </Suspense>
   ) : section === "safety" ? (
     <Suspense fallback={<WorkspaceSkeleton kind="safety" />}>
       <SafetyPage />
@@ -33,9 +45,13 @@ export function AdminSection({ section }: { section: string }) {
   ) : section === "referrals" ? (
     <ReferralsPage />
   ) : section === "emergency" ? (
-    <EmergencyPage />
+    <Suspense fallback={<WorkspaceSkeleton kind="emergency" />}>
+      <EmergencyPage />
+    </Suspense>
   ) : section === "trust" ? (
-    <TrustPage />
+    <Suspense fallback={<WorkspaceSkeleton kind="trust" />}>
+      <TrustPage />
+    </Suspense>
   ) : (
     <OverviewPage />
   );
@@ -232,6 +248,8 @@ function OverviewPage() {
 }
 function ReferralsPage() {
   const { api } = useAdmin();
+  const { authority } = useWorkspace();
+  const permitted = canAct(authority, "referrals.write", true);
   const [search, setSearch] = useState("");
   const [confirm, setConfirm] = useState(false);
   const [limit, setLimit] = useState(100);
@@ -243,7 +261,7 @@ function ReferralsPage() {
   const state = useRemote(load, `referrals:${search}`);
   const data = state.data;
   const release = async () => {
-    if (busy) return;
+    if (busy || !permitted) return;
     setBusy(true);
     setNotice(null);
     try {
@@ -365,11 +383,19 @@ function ReferralsPage() {
                 </label>
                 <AdminButton
                   variant="secondary"
-                  disabled={busy || state.loading || Boolean(state.error)}
+                  disabled={
+                    busy || state.loading || Boolean(state.error) || !permitted
+                  }
                   onClick={() => setConfirm(true)}
                 >
                   Review release
                 </AdminButton>
+                {!permitted && (
+                  <Notice>
+                    Referral releases require referrals.write authority and a
+                    verified staff MFA session.
+                  </Notice>
+                )}
               </div>
             </div>
           </Panel>
@@ -397,7 +423,10 @@ function TrustPage() {
   const { api } = useAdmin();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("active");
-  const [id, setId] = useState("");
+  const linked = useSearchParams().get("caseId") || "";
+  const [selected, setSelected] = useState({ linked, id: linked });
+  const id = selected.linked === linked ? selected.id : linked;
+  const setId = (id: string) => setSelected({ linked, id });
   const load = useCallback(
     () => api.trust(search, filter),
     [api, search, filter],
@@ -591,8 +620,23 @@ function TrustDetail({ id }: { id: string }) {
 }
 function EmergencyPage() {
   const { api } = useAdmin();
-  const [filter, setFilter] = useState("active");
-  const [id, setId] = useState("");
+  const unresolvedLink = useSearchParams().get("attention") === "unresolved";
+  const [filterSelection, setFilterSelection] = useState({
+    unresolvedLink,
+    value: unresolvedLink ? "unresolved" : "active",
+  });
+  const filter =
+    filterSelection.unresolvedLink === unresolvedLink
+      ? filterSelection.value
+      : unresolvedLink
+        ? "unresolved"
+        : "active";
+  const setFilter = (value: string) =>
+    setFilterSelection({ unresolvedLink, value });
+  const linked = useSearchParams().get("incidentId") || "";
+  const [selected, setSelected] = useState({ linked, id: linked });
+  const id = selected.linked === linked ? selected.id : linked;
+  const setId = (id: string) => setSelected({ linked, id });
   const load = useCallback(() => api.emergencies(filter), [api, filter]);
   const state = useRemote(load, `emergency:${filter}`, true);
   const data = state.data;
@@ -609,6 +653,7 @@ function EmergencyPage() {
             }}
           >
             {[
+              "unresolved",
               "active",
               "responding",
               "failed",
@@ -712,7 +757,7 @@ function EmergencyDetail({ id }: { id: string }) {
               <br />
               {item.chore?.address}
             </Fact>
-            <Fact label="Noonlight alarm">
+            <Fact label="Provider alarm">
               {item.provider.alarmId || "Not submitted"}
             </Fact>
             <Fact label="Provider mode">

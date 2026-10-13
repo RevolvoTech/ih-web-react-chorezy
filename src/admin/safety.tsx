@@ -8,6 +8,9 @@ import {
 } from "react";
 import { useAdmin } from "./auth";
 import { WorkspaceSkeleton } from "./loading";
+import { TemplatePicker } from "./template-picker";
+import { unresolvedPlaceholders } from "./templates";
+import { canAct, useWorkspace } from "./workspace-state";
 import { useSearchParams } from "next/navigation";
 import type {
   SafetyAction,
@@ -52,6 +55,7 @@ const reasons = [
 ];
 export function SafetyPage() {
   const { api } = useAdmin();
+  const { authority } = useWorkspace();
   const linkedIdentifier = useSearchParams().get("identifier");
   const [identifier, setIdentifier] = useState("");
   const [context, setContext] = useState<SafetyContext | null>(null);
@@ -125,9 +129,22 @@ export function SafetyPage() {
     type,
   );
   const isNote = type === "support_note";
+  const privileged = permanent || device || ip || ipHash;
+  const actionAllowed = canAct(
+    authority,
+    isNote
+      ? "support.write"
+      : privileged
+        ? "safety.privileged"
+        : "safety.write",
+    !isNote && privileged,
+  );
+  const templateUnedited = [note, publicMessage, evidence].some(
+    unresolvedPlaceholders,
+  );
   function review(event: FormEvent) {
     event.preventDefault();
-    if (!context || busy) return;
+    if (!context || busy || !actionAllowed || templateUnedited) return;
     setConfirmedPermanent(false);
     setPending({
       payload: {
@@ -275,10 +292,14 @@ export function SafetyPage() {
                 label: "Recent open tickets",
                 value: context.summary.openSupportTickets,
               },
-              {
-                label: "Recent payment flags",
-                value: context.summary.paymentIssues,
-              },
+              ...(context.financeAccess
+                ? [
+                    {
+                      label: "Recent payment flags",
+                      value: context.summary.paymentIssues ?? 0,
+                    },
+                  ]
+                : []),
             ]}
           />
           <div className="admin-two-columns">
@@ -346,6 +367,14 @@ export function SafetyPage() {
                     onChange={(event) => setNote(event.target.value)}
                   />
                 </label>
+                <TemplatePicker
+                  key={`${context.user.id}:internal`}
+                  kind="internal"
+                  value={note}
+                  onInsert={setNote}
+                  disabled={busy || !actionAllowed}
+                  maxLength={2000}
+                />
                 {!isNote && (
                   <>
                     <label>
@@ -359,6 +388,17 @@ export function SafetyPage() {
                         }
                       />
                     </label>
+                    <TemplatePicker
+                      key={`${context.user.id}:restriction`}
+                      kind="restriction"
+                      context={{
+                        reason: reasons.find((item) => item[0] === reason)?.[1],
+                      }}
+                      value={publicMessage}
+                      onInsert={setPublicMessage}
+                      disabled={busy || !actionAllowed}
+                      maxLength={500}
+                    />
                     <label>
                       Evidence summary
                       <textarea
@@ -412,10 +452,24 @@ export function SafetyPage() {
                     </fieldset>
                   </>
                 )}
+                {templateUnedited && (
+                  <Notice error>
+                    Edit all template placeholders before applying this action.
+                  </Notice>
+                )}
+                {!actionAllowed && (
+                  <Notice>
+                    {privileged && !isNote
+                      ? "Permanent, device and network restrictions require safety.privileged authority and a verified staff MFA session."
+                      : `Your staff account needs ${isNote ? "support.write" : "safety.write"} authority for this action.`}
+                  </Notice>
+                )}
                 <AdminButton
                   type="submit"
                   variant={isNote ? "primary" : "danger"}
-                  disabled={busy || !note.trim()}
+                  disabled={
+                    busy || !note.trim() || !actionAllowed || templateUnedited
+                  }
                 >
                   Review {isNote ? "note" : "action"}
                 </AdminButton>
@@ -451,7 +505,26 @@ export function SafetyPage() {
                     {action.status === "active" && (
                       <AdminButton
                         variant="secondary"
-                        disabled={busy}
+                        disabled={
+                          busy ||
+                          !canAct(
+                            authority,
+                            action.actionType === "support_note"
+                              ? "support.write"
+                              : action.permanent ||
+                                  action.scope.device ||
+                                  action.scope.ip ||
+                                  action.scope.ipDeviceHash
+                                ? "safety.privileged"
+                                : "safety.write",
+                            Boolean(
+                              action.permanent ||
+                              action.scope.device ||
+                              action.scope.ip ||
+                              action.scope.ipDeviceHash,
+                            ),
+                          )
+                        }
                         onClick={() => {
                           setRevokeReason("");
                           setPending({ revoke: action });
@@ -478,14 +551,23 @@ export function SafetyPage() {
             title="Conversation summaries"
             records={context.conversations}
           />
-          <RecordTable
-            title="Recent payment records"
-            records={context.payments}
-          />
-          <RecordTable
-            title="Recent transactions"
-            records={context.transactions}
-          />
+          {context.financeAccess ? (
+            <>
+              <RecordTable
+                title="Recent payment records"
+                records={context.payments || []}
+              />
+              <RecordTable
+                title="Recent transactions"
+                records={context.transactions || []}
+              />
+            </>
+          ) : (
+            <Notice>
+              Finance access is required to view account payment and transaction
+              records.
+            </Notice>
+          )}
           <RecordTable
             title="Recent support tickets"
             records={context.supportTickets}

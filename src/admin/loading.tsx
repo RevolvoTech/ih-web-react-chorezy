@@ -1,6 +1,7 @@
 import { Metrics, Panel } from "./ui";
 
 export type WorkspaceKind =
+  | "attention"
   | "overview"
   | "support"
   | "safety"
@@ -9,6 +10,7 @@ export type WorkspaceKind =
   | "emergency";
 
 const metricLabels: Record<WorkspaceKind, string[]> = {
+  attention: ["Unread support tickets", "Unresolved support tickets", "Unresolved emergencies", "Cases needing attention"],
   overview: [
     "Total accounts",
     "New in period",

@@ -44,12 +44,14 @@ export function Panel({
   className = "",
   aside,
   id,
+  variant = "default",
 }: {
   title: string;
   children: ReactNode;
   className?: string;
   aside?: ReactNode;
   id?: string;
+  variant?: "default" | "padded";
 }) {
   return (
     <section id={id} className={`admin-panel ${className}`}>
@@ -57,7 +59,11 @@ export function Panel({
         <h2>{title}</h2>
         {aside}
       </header>
-      {children}
+      {variant === "padded" ? (
+        <div className="admin-panel-body">{children}</div>
+      ) : (
+        children
+      )}
     </section>
   );
 }
@@ -169,7 +175,8 @@ export function ConfirmDialog({
     </dialog>
   );
 }
-export const humanize = (value: string) => value.replace(/[_-]/g, " ");
+export const humanize = (value: string) =>
+  value.replace(/([a-z\d])([A-Z])/g, "$1 $2").replace(/[_-]/g, " ");
 export function time(value?: string) {
   if (!value) return "Not recorded";
   const date = new Date(value);
