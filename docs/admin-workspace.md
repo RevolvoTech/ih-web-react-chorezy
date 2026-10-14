@@ -2,7 +2,9 @@
 
 ## Scope and design
 
-This isolated branch implements the Chorezy staff console under `/admin/` and the matching Chorezy Express routes. MongoDB is the source of application records; the existing Supabase project authenticates staff. This work has not been deployed.
+The Chorezy staff website is on `main` under `/admin/`. The dashboard worker's ten website commits were consolidated on 2026-10-14. MongoDB is the source of application records; the existing Supabase project authenticates staff. The matching Express work remains in its separate backend QA branch and requires the release gates below before live staff operations are verified.
+
+The website's canonical local checkout is `ih-web-react-chorezy`. The local review preview runs at `http://localhost:4058/admin/` from that checkout; the development API proxy uses port 4059 and the production preview uses port 4062. Public staff configuration and the existing browser storage state were preserved privately during consolidation. Secrets and browser state are not committed.
 
 Seven primary sections are grouped by task: Case files, Account overview, User support, Safety, Emergency, Trust review and Referrals. Attention is an optional diagnostic route. Counts appear after the section text: Support counts unread messages, Case files counts trust cases in `needs_review`, and Emergency counts unresolved incidents, including dispatch failures. Links select the corresponding filter. Viewing records does not acknowledge unread work.
 
