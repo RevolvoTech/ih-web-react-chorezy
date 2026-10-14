@@ -47,3 +47,20 @@ All three intercepted Playwright flows reran on the final API build. Eight scree
 - Financial hold/release/refund policy, recovery/intervention and scoped evidence export remain outside worker authorization.
 
 No deployment, genuine staff mutation, real provider action, full matrix PASS promotion or STOP marker is claimed by this isolated milestone.
+
+## Sole replacement worker continuation — 2026-10-14 10:06 PKT
+
+`/root/admin_native_audit` completed the native contract audit and parent-approved auth correction as backend `cb64ac0`, with 17 new checks and 56 focused regression passes. New durable restriction DTOs identify the account; actual password login denies durable investigations before legacy expiry cleanup; restriction read faults return sanitized 503 without invalidating valid sessions. Website native audit is committed as `db2d755` in `docs/qa/admin-native-integration-audit-20261014.md`. Root owns the native implementation and deployed backend.
+
+The same sole worker added an explicit isolated migration command:
+
+```text
+node scripts/migrations/20261014-admin-workspace-schema.js
+node scripts/migrations/20261014-admin-workspace-schema.js --apply
+```
+
+Default is a read-only JSON plan; only the explicit `--apply` flag creates missing collections/indexes. Current schema scope is 11 collections/39 declared indexes, including the partial unique SupportMessage request-key index. Complete preflight conflicts stop all writes; additive apply preserves unrelated indexes, reports partial failures with sanitized codes and re-audits before success. No index drops, duplicate repair, startup hook or automatic production run. The loader disables automatic Mongoose schema creation, and the command requires `MONGO_URI` privately configured for the `chorezy` database. Exact commands, index inventory, exit codes and prerequisites are in backend `docs/qa/admin-workspace-schema-migration-20261014.md`.
+
+The new migration suite has **18 PASS** on a dedicated database inside in-memory Mongo; syntax/diff gates and nonconnecting CLI help pass. Initial fixture/cleanup harness errors were corrected before the final gate. This script has not been applied to the VPS/application database. Runtime review confirmed API/worker 63e68a8, writable replica set and healthy services; metadata listing was unavailable with AtlasError 8000, so index presence remains unverified. API/worker audit-signing key and managed ID are absent. Legitimate current staff capability/MFA integration remains pending. Drain old API/worker writers before activating real preservation holds; old rollback images do not enforce the new authority.
+
+No Flutter, test matrix, active backend, VPS, environment, provider, rotation or shutdown changes were made by this continuation. No genuine staff mutation, full matrix promotion, deployment or STOP marker is claimed.
