@@ -1,4 +1,4 @@
-# Staff dashboard worker checkpoint — 2026-10-14 07:55 PKT
+# Staff dashboard worker checkpoint — 2026-10-14 08:05 PKT
 
 Supersedes `admin-launch-resume-20261014.md` for the investigation/preservation slice. Sole worker `/root/admin_freeze_finish`; parent owns Flutter, test matrices, deployed backend, providers and rotation. Do not duplicate workers or reset these worktrees.
 
@@ -11,6 +11,7 @@ Worktree `../choreo/ih-app-express-chorezy-admin-qa`, branch `qa/admin-launch-co
 - `0adee5e`: frozen private push previews denied; exact current participant-authorized `chore-emergency:updated` exception, no category/route/name bypass. Single/batch/durable failed reads retry without sending. A second restriction read immediately before dispatch closes the slow-auth snapshot gap. Five focused groups **59 PASS**, followed by **15 PASS** in the final investigation-push suite.
 - `aa23614`: clean sync of root payout-reauthentication commit `63e68a8`. Payout regression plus then-current preservation suite **61 PASS** across four suites.
 - `0165af9`: HEAD diagnostic limit of 20 operations and 20 objects, 10-second read budget, 2.5-second abort per object; truncation disclosed without relaxing any gate. Full preservation suite **28 PASS** at this milestone.
+- `c48a8f4`: isolated payout integration extension after parent review. Current restriction is read before/after bcrypt and before final provider link/renewal. Six persisted/mock-provider failures reproduced against the prior source, then all six passed. Final preservation/payout/onboarding/refresh group **66 PASS across four suites**, exit 0, 34.471 seconds. No provider call on denial.
 - `848d247`: private profile reports effective investigation/durable restriction separately from raw stored account status. Pending/held freezes display `under_investigation`; independent bans still apply after release. No legacy flags are changed. Full preservation suite **29 PASS** after this correction (37.626 seconds, exit 0).
 
 Backend is clean. `docs/admin-preservation-20261014.md` records contracts and operational limitations. Additional regression groups: legacy safety/auth/socket **57 PASS, 1 existing skip**; upload/retention/supervision **19 PASS**. Counts overlap and must not be added to claim matrix progress.
@@ -21,7 +22,7 @@ Existing implementation and label fixes resumed. Uses existing panels/buttons/te
 
 Shared confirmation dialog wraps keyboard focus, defaults to Cancel and restores trigger on Escape; modal scrolling is contained. Templates remain optional drafts, with no automatic send/closing message or fake live presence. Finance data requires explicit `finance.read` and has no fallback.
 
-TypeScript, ESLint, API **14 PASS**, isolated `.next-admin-qa` webpack build **38 pages**, and SEO validation passed. Normal `.next` generated imports were restored after the isolated build; final type checking validates the restored form. Website source plus reviewed evidence are saved in the subsequent website milestone commit.
+TypeScript, ESLint, API **14 PASS**, isolated `.next-admin-qa` webpack build **38 pages**, and SEO validation passed. Normal `.next` generated imports were restored after the isolated build; final type checking validates the restored form. Website source plus reviewed evidence are committed as `4de3615`; this later checkpoint adds the parent-approved payout integration result. Both worktrees are clean after the final documentation commit.
 
 ## Fresh browser evidence
 

@@ -3,7 +3,7 @@
   "date": "2026-10-14",
   "websiteBranch": "qa/chorezy-admin-20261013",
   "backendBranch": "qa/admin-launch-controls-20261014",
-  "backendHead": "848d2476ea6b26563113f320ecc4a70df3f93574",
+  "backendHead": "c48a8f46901218405b8e55285b3f482a74584ee8",
   "syncedRootCommits": {
     "sessionPush": "b7824fb400ad464a0624a7732b3385ceeb5261b9",
     "payoutReauth": "63e68a818315832eef38eb269b9e28544b074dc0"
@@ -66,6 +66,25 @@
     "seo": {
       "status": "PASS",
       "command": "CHOREZY_QA_DIST_DIR=.next-admin-qa node scripts/validate-seo.mjs"
+    },
+    "payoutInvestigationIntegration": {
+      "status": "PASS",
+      "tests": 66,
+      "suites": 4,
+      "durationSeconds": 34.471,
+      "command": "node node_modules/jest/bin/jest.js --runInBand tests/integration/payout-reauthentication.test.js tests/unit/payments/paymentRoutes.onboarding.test.js tests/unit/payments/stripeConnectRefreshRoute.test.js tests/integration/admin-preservation.test.js",
+      "baseline": {
+        "failed": 6,
+        "notSelected": 15,
+        "source": "848d247",
+        "note": "Persisted freezes allowed setup/renewal; restriction-read failures also allowed provider capabilities"
+      },
+      "focusedAfterFix": {
+        "passed": 6,
+        "notSelected": 15,
+        "providerLinkCallsOnDenial": 0
+      },
+      "note": "Current independent restriction checked before/after delayed password comparison and before final link/renewal; no legacy flag writes. Includes 29 preservation and 21 payout reauthentication checks, not additional matrix rows."
     }
   },
   "browser": {
@@ -159,5 +178,6 @@
   "fullMatrixRowsPromoted": 0,
   "deployment": false,
   "stopMarkerCreated": false,
-  "recordedAt": "2026-10-14T07:55:00+05:00"
+  "recordedAt": "2026-10-14T08:05:00+05:00",
+  "websiteMilestone": "4de3615"
 }
