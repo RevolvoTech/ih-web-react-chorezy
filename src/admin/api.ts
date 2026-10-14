@@ -31,6 +31,8 @@ import type {
   LinkedRecord,
   UserProfile,
   UserFinance,
+  Investigation,
+  PreservationDiagnostic,
 } from "./workspace-contracts";
 
 export class AdminApiError extends Error {
@@ -150,6 +152,17 @@ export function createAdminApi(
   };
   const query = (values: Record<string, string | number>) =>
     `?${new URLSearchParams(Object.entries(values).map(([k, v]) => [k, String(v)]))}`;
+  const unconfirmedInvestigation = () =>
+    new AdminApiError(502, "INVESTIGATION_RESULT_UNCONFIRMED", "The investigation result could not be confirmed. Refresh this account before retrying.");
+  const confirmedInvestigation = (record: Investigation, id: string) => {
+    if (!record || typeof record !== "object" || Array.isArray(record) ||
+        !/^[a-f\d]{24}$/i.test(record.id || "") || typeof record.userId !== "string" ||
+        record.userId.toLowerCase() !== id.toLowerCase() ||
+        !["active", "released"].includes(record.status) ||
+        !["pending", "active", "released"].includes(record.preservation?.status || ""))
+      throw unconfirmedInvestigation();
+    return record;
+  };
   return {
     overview: (days = 30) =>
       data<Geography>(`/platform-analytics/world-domination${query({ days })}`),
@@ -170,6 +183,65 @@ export function createAdminApi(
       ),
     lookup: (identifier: string) =>
       data<LookupRecord[]>(`/workspace/lookup${query({ identifier })}`),
+    investigations: (id: string, cursor = "") =>
+      data<Page<Investigation>>(
+        `/workspace/users/${encodeURIComponent(id)}/investigations${query({ cursor })}`,
+      ),
+    createInvestigation: async (
+      id: string,
+      payload: { reason: string; publicMessage: string; requestKey: string },
+    ) => {
+      const record = confirmedInvestigation(await data<Investigation>(
+        `/workspace/users/${encodeURIComponent(id)}/investigations`,
+        { method: "POST", body: JSON.stringify(payload) },
+      ), id);
+      if (record.status !== "active") throw new AdminApiError(409, "INVESTIGATION_ALREADY_RELEASED", "This investigation was already released. Refresh this account to review its current restrictions.");
+      return record;
+    },
+    releaseInvestigation: async (
+      id: string,
+      investigationId: string,
+      reason: string,
+    ) => {
+      const receipt = await data<{ id: string; status: string }>(
+        `/workspace/users/${encodeURIComponent(id)}/investigations/${encodeURIComponent(investigationId)}/release`,
+        { method: "POST", body: JSON.stringify({ reason }) },
+      );
+      if (!receipt || receipt.id !== investigationId || receipt.status !== "released") throw unconfirmedInvestigation();
+      return receipt;
+    },
+    retryPreservation: async (id: string, investigationId: string, reason: string) => {
+      const record = confirmedInvestigation(await data<Investigation>(
+        `/workspace/users/${encodeURIComponent(id)}/investigations/${encodeURIComponent(investigationId)}/preservation/retry`,
+        { method: "POST", body: JSON.stringify({ reason }) },
+      ), id);
+      if (record.id !== investigationId) throw unconfirmedInvestigation();
+      return record;
+    },
+    preservationDiagnostic: async (
+      id: string,
+      investigationId: string,
+      reason: string,
+    ) => {
+      const receipt = await data<PreservationDiagnostic>(
+        `/workspace/users/${encodeURIComponent(id)}/investigations/${encodeURIComponent(investigationId)}/preservation/diagnostic`,
+        { method: "POST", body: JSON.stringify({ reason }) },
+      );
+      if (!receipt || receipt.investigationId !== investigationId || receipt.gateRelaxed !== false || !Array.isArray(receipt.observations)) throw unconfirmedInvestigation();
+      return receipt;
+    },
+    releasePreservation: async (
+      id: string,
+      investigationId: string,
+      reason: string,
+    ) => {
+      const receipt = await data<{ id: string; preservationStatus: string }>(
+        `/workspace/users/${encodeURIComponent(id)}/investigations/${encodeURIComponent(investigationId)}/preservation/release`,
+        { method: "POST", body: JSON.stringify({ reason }) },
+      );
+      if (!receipt || receipt.id !== investigationId || receipt.preservationStatus !== "released") throw unconfirmedInvestigation();
+      return receipt;
+    },
     choreCase: (id: string) =>
       data<ChoreCaseFile>(`/workspace/chores/${encodeURIComponent(id)}`),
     caseEvidence: (

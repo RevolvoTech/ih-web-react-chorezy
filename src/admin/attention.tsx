@@ -60,6 +60,9 @@ export function AttentionPage() {
             <option value="support">Unread or urgent support</option>
             <option value="emergency">Unresolved emergencies</option>
             <option value="case">Cases needing review</option>
+            <option value="investigation">
+              Investigations and preservation
+            </option>
           </select>
         </label>
         <AdminButton type="submit" variant="secondary" disabled={refreshing}>
@@ -98,7 +101,11 @@ export function AttentionRecords({
         <>
           <div className="admin-record-top">
             <strong>
-              {record.subject || record.caseNumber || `Emergency ${record.id}`}
+              {record.subject ||
+                record.caseNumber ||
+                (record.kind === "investigation"
+                  ? "Account investigation"
+                  : `Emergency ${record.id}`)}
             </strong>
             <Status
               context={record.kind === "emergency" ? "emergency" : "default"}
@@ -125,7 +132,9 @@ export function AttentionRecords({
                   ? `/admin/support/?ticketId=${encodeURIComponent(record.id)}`
                   : record.kind === "emergency"
                     ? `/admin/emergency/?incidentId=${encodeURIComponent(record.id)}`
-                    : `/admin/trust/?caseId=${encodeURIComponent(record.id)}`
+                    : record.kind === "investigation"
+                      ? `/admin/cases/?userId=${encodeURIComponent(record.targetUserId || "")}`
+                      : `/admin/trust/?caseId=${encodeURIComponent(record.id)}`
               }
             >
               Open {record.kind === "case" ? "trust case" : record.kind}

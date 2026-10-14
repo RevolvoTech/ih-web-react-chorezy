@@ -1,0 +1,48 @@
+# Staff dashboard worker checkpoint — 2026-10-14 07:55 PKT
+
+Supersedes `admin-launch-resume-20261014.md` for the investigation/preservation slice. Sole worker `/root/admin_freeze_finish`; parent owns Flutter, test matrices, deployed backend, providers and rotation. Do not duplicate workers or reset these worktrees.
+
+## Saved backend milestones
+
+Worktree `../choreo/ih-app-express-chorezy-admin-qa`, branch `qa/admin-launch-controls-20261014`:
+
+- `ae94834`: durable investigation freeze, independent account/evidence release, scoped preservation and shared deletion coordination. Freeze commits before linked-record discovery. Both account-delete/freeze races, simultaneous create idempotency and linked-read failure verified on an isolated Mongo replica set.
+- `07aab5b`: clean sync of root session-bound push commit `b7824fb`.
+- `0adee5e`: frozen private push previews denied; exact current participant-authorized `chore-emergency:updated` exception, no category/route/name bypass. Single/batch/durable failed reads retry without sending. A second restriction read immediately before dispatch closes the slow-auth snapshot gap. Five focused groups **59 PASS**, followed by **15 PASS** in the final investigation-push suite.
+- `aa23614`: clean sync of root payout-reauthentication commit `63e68a8`. Payout regression plus then-current preservation suite **61 PASS** across four suites.
+- `0165af9`: HEAD diagnostic limit of 20 operations and 20 objects, 10-second read budget, 2.5-second abort per object; truncation disclosed without relaxing any gate. Full preservation suite **28 PASS** at this milestone.
+- `848d247`: private profile reports effective investigation/durable restriction separately from raw stored account status. Pending/held freezes display `under_investigation`; independent bans still apply after release. No legacy flags are changed. Full preservation suite **29 PASS** after this correction (37.626 seconds, exit 0).
+
+Backend is clean. `docs/admin-preservation-20261014.md` records contracts and operational limitations. Additional regression groups: legacy safety/auth/socket **57 PASS, 1 existing skip**; upload/retention/supervision **19 PASS**. Counts overlap and must not be added to claim matrix progress.
+
+## Website result
+
+Existing implementation and label fixes resumed. Uses existing panels/buttons/templates, Bricolage/Cereal, semantic inline sidebar counts and current scoped permissions. Investigations appear in the private profile and unresolved Case files; account/evidence release are separate. Reason validation and current MFA gate writes. Critical mutation receipts reject malformed/wrong-account replies and released replays before displaying success; uncertain responses retain request identity and refresh current records.
+
+Shared confirmation dialog wraps keyboard focus, defaults to Cancel and restores trigger on Escape; modal scrolling is contained. Templates remain optional drafts, with no automatic send/closing message or fake live presence. Finance data requires explicit `finance.read` and has no fallback.
+
+TypeScript, ESLint, API **14 PASS**, isolated `.next-admin-qa` webpack build **38 pages**, and SEO validation passed. Normal `.next` generated imports were restored after the isolated build; final type checking validates the restored form. Website source plus reviewed evidence are saved in the subsequent website milestone commit.
+
+## Fresh browser evidence
+
+All three intercepted Playwright flows reran on the final API build. Eight screenshots in `docs/qa/admin-freeze-*-20261014.png` replaced earlier captures. Parent review caught the old fixture's misleading green Active badge; the fixture now derives current investigation status, all three flows assert the profile's Under investigation badge, and fresh desktop pending/mobile held screenshots were visually inspected.
+
+- Unresolved template blocks freeze; open/cancel causes zero writes. Cancel focus, Tab wrapping, Escape dismissal/trigger restoration pass.
+- Freeze succeeds while preservation stays pending. Account release leaves evidence pending; retry cannot refreeze. Exact-object diagnostics never clear the uncertain gate. Pending evidence remains in Case files and sidebar count. Counters: create 1/account release 1/evidence release 0/retry 1/diagnostic 1.
+- Known evidence release leaves the account frozen and retains the other investigation hold. Counters: create 2/account release 0/evidence release 1.
+- Current aal1 and missing investigation permission disable mutation. Case-reader profile requests no finance/transactions data and displays no finance panel; zero unexpected mutations.
+- Desktop 1440px, mobile 390px and 320px long unsent content pass without horizontal overflow; visible buttons minimum 44px. Reduced-motion skeleton animation is none. Loading/failed-read states block new freeze, with readable dates/labels and established fonts.
+
+`docs/qa/admin-freeze-20261014.json` records exact check groups, commands, outcomes, screenshots and remaining prerequisites. All auth/API/storage/provider actions were synthetic or mocked: providerCalls=0, realStaffMutations=0, fullMatrixRowsPromoted=0.
+
+## Processes and remaining prerequisites
+
+- Dedicated browser `admin-freeze-20261014` PID19928 and owned preview **4063 PID8584** are closed. Inherited **4062 PID8188** and owner previews **4058/4059** were preserved. No environment, provider, rotation or shutdown changes; no STOP marker.
+- Parent's next profile switch is **09:28 PKT**. Work is checkpointed before it.
+- Trusted staff provisioning: server-managed capabilities, genuine current MFA, audit signing key of at least 32 characters and managed key ID.
+- Deployment prerequisites: Mongo replica-set transactions and investigation/hold/deletion indexes; deployed CORS and genuine authorized staff/nonstaff/owned-record integration.
+- Native limited-support/appeal and current participant/Guardian emergency integration remains outside these worktrees.
+- Unknown external deletion requires verified original operation termination/quiescence and a separately authorized signed reconciliation procedure. Present/absent HEAD results are insufficient. This UI has no general gate unlock.
+- Financial hold/release/refund policy, recovery/intervention and scoped evidence export remain outside worker authorization.
+
+No deployment, genuine staff mutation, real provider action, full matrix PASS promotion or STOP marker is claimed by this isolated milestone.

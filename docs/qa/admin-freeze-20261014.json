@@ -1,0 +1,163 @@
+{
+  "milestone": "Isolated investigation and evidence preservation controls",
+  "date": "2026-10-14",
+  "websiteBranch": "qa/chorezy-admin-20261013",
+  "backendBranch": "qa/admin-launch-controls-20261014",
+  "backendHead": "848d2476ea6b26563113f320ecc4a70df3f93574",
+  "syncedRootCommits": {
+    "sessionPush": "b7824fb400ad464a0624a7732b3385ceeb5261b9",
+    "payoutReauth": "63e68a818315832eef38eb269b9e28544b074dc0"
+  },
+  "checks": {
+    "preservation": {
+      "status": "PASS",
+      "tests": 29,
+      "mongo": "isolated replica set",
+      "command": "npm test -- --runInBand tests/integration/admin-preservation.test.js",
+      "durationSeconds": 37.626,
+      "note": "Exit 0; includes effective profile status for pending/held investigations, releases and independent bans; no legacy flag writes"
+    },
+    "pushRecipients": {
+      "status": "PASS",
+      "tests": 59,
+      "suites": 5,
+      "note": "Before one additional final-check snapshot race was added"
+    },
+    "pushRestrictionFinal": {
+      "status": "PASS",
+      "tests": 15,
+      "command": "npm test -- --runInBand tests/integration/investigation-push-restriction.test.js"
+    },
+    "payoutSyncWithPreservation": {
+      "status": "PASS",
+      "tests": 61,
+      "suites": 4,
+      "note": "26 then-current preservation checks plus 35 payout auth/setup/renewal checks"
+    },
+    "legacySafetyAuthSocket": {
+      "status": "PASS",
+      "tests": 57,
+      "existingSkipped": 1,
+      "suites": 4
+    },
+    "legacyUploadRetentionSupervision": {
+      "status": "PASS",
+      "tests": 19,
+      "suites": 5
+    },
+    "websiteApi": {
+      "status": "PASS",
+      "tests": 14,
+      "command": "node --test scripts/test-admin-api.mjs"
+    },
+    "typecheck": {
+      "status": "PASS",
+      "command": "npm run typecheck"
+    },
+    "lint": {
+      "status": "PASS",
+      "command": "npm run lint"
+    },
+    "build": {
+      "status": "PASS",
+      "command": "CHOREZY_QA_DIST_DIR=.next-admin-qa node node_modules/next/dist/bin/next build --webpack",
+      "pages": 38
+    },
+    "seo": {
+      "status": "PASS",
+      "command": "CHOREZY_QA_DIST_DIR=.next-admin-qa node scripts/validate-seo.mjs"
+    }
+  },
+  "browser": {
+    "tool": "Playwright CLI",
+    "session": "admin-freeze-20261014",
+    "preview": "http://127.0.0.1:4063",
+    "fixtures": "Fully intercepted API/auth; unrelated external traffic blocked",
+    "viewports": [
+      1440,
+      390,
+      320
+    ],
+    "verified": [
+      "Unresolved template prevents freeze; open and Escape cancel cause zero mutations",
+      "Cancel receives default focus; Tab wraps inside dialog; Escape restores trigger",
+      "Account freeze succeeds while evidence preservation is pending",
+      "Account release leaves evidence pending; retry does not refreeze the account",
+      "Absent-object diagnostic does not release uncertain operation",
+      "Pending evidence remains in unresolved Case files and sidebar count after account release",
+      "Evidence release leaves account frozen and preserves the other investigation hold",
+      "aal1/enrolled session and staff without investigation.write cannot mutate",
+      "Case-reader profile triggers zero finance/transactions requests and has no finance panel",
+      "320px long unsent draft has no horizontal overflow; visible buttons minimum 44px",
+      "Reduced-motion skeleton animation is none; loading and failed-read states retain truthful controls",
+      "Camel-case labels/ISO dates replaced with readable labels and localized timestamps; Bricolage heading/Cereal body",
+      "Private profile badge derives effective restriction: Under investigation for pending/held freezes; separate account release refreshes profile"
+    ],
+    "focusedOutcomes": {
+      "pendingFlow": {
+        "creates": 1,
+        "accountReleases": 1,
+        "evidenceReleases": 0,
+        "retries": 1,
+        "diagnostics": 1,
+        "effectiveProfileStatusVerified": true
+      },
+      "heldFlow": {
+        "creates": 2,
+        "accountReleases": 0,
+        "evidenceReleases": 1,
+        "overlappingHoldRetained": true,
+        "effectiveProfileStatusVerified": true
+      },
+      "permissionFlow": {
+        "unexpectedMutationRequests": 0,
+        "financeRequests": 0,
+        "reducedMotionAnimation": "none",
+        "effectiveProfileStatusVerified": true
+      }
+    },
+    "notes": [
+      "First timing assertion read the inbox before its status arrived; corrected flow waits for the actual record status.",
+      "First held-release script selected an older visible button before refreshed new card arrived; corrected flow scopes to exact record and waits for that card.",
+      "Native dialog initially allowed Tab to body/browser chrome at cycle end; shared explicit focus wrapping fixed and retested.",
+      "All three positive browser flows were recaptured on the final API receipt-validation build. Fourteen API tests separately cover malformed/wrong-record receipts and released replays.",
+      "Parent review caught a stale fixture badge reading Active while the account was frozen. Fixture now derives current investigation status; real Mongo test confirms effective server profile status and independent bans. All eight screenshots were replaced with fresh captures."
+    ],
+    "screenshots": [
+      "docs/qa/admin-freeze-aal1-denied-320-20261014.png",
+      "docs/qa/admin-freeze-attention-mobile-20261014.png",
+      "docs/qa/admin-freeze-error-320-20261014.png",
+      "docs/qa/admin-freeze-evidence-released-320-20261014.png",
+      "docs/qa/admin-freeze-labels-desktop-20261014.png",
+      "docs/qa/admin-freeze-loading-320-20261014.png",
+      "docs/qa/admin-freeze-pending-desktop-20261014.png",
+      "docs/qa/admin-freeze-released-pending-mobile-20261014.png"
+    ],
+    "visuallyInspected": [
+      "docs/qa/admin-freeze-pending-desktop-20261014.png",
+      "docs/qa/admin-freeze-aal1-denied-320-20261014.png"
+    ],
+    "browserClosed": true,
+    "ownedPreviewStopped": true,
+    "preservedPorts": [
+      4058,
+      4059,
+      4062
+    ],
+    "recapturedAt": "2026-10-14T07:53:00+05:00"
+  },
+  "remainingPrerequisites": [
+    "Trusted server-managed staff capabilities, current genuine MFA and audit signing configuration",
+    "Verify Mongo replica-set transaction support and new investigation/hold/deletion indexes before deployment",
+    "Deployed CORS and real authorized staff/nonstaff/owned-record integration verification",
+    "Native limited-support/appeal and participant-authorized emergency integration",
+    "Original-operation quiescence proof and separately authorized uncertain-delete reconciliation procedure",
+    "Financial hold/release/refund policy, recovery/intervention/export remain outside worker authorization"
+  ],
+  "providerCalls": 0,
+  "realStaffMutations": 0,
+  "fullMatrixRowsPromoted": 0,
+  "deployment": false,
+  "stopMarkerCreated": false,
+  "recordedAt": "2026-10-14T07:55:00+05:00"
+}

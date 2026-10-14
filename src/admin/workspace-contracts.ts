@@ -1,4 +1,39 @@
 import type { Person } from "./contracts";
+export interface Investigation {
+  id: string;
+  userId: string;
+  status: "active" | "released";
+  reason: string;
+  publicMessage: string;
+  createdBy: string;
+  createdAt: string;
+  releasedAt?: string;
+  releaseReason?: string;
+  preservation?: {
+    status: "active" | "released" | "pending";
+    coverage?: "current_records" | "prior_deletion_recorded";
+    priorDeletionCount?: number;
+    subjects?: string[];
+    failureCode?: string;
+  };
+}
+export interface PreservationDiagnostic {
+  investigationId: string;
+  preservationConfirmed: boolean;
+  gateRelaxed: false;
+  note: string;
+  observations: {
+    operationId: string;
+    kind: string;
+    phase: string;
+    unresolved: true;
+    observations: {
+      keyHash: string;
+      observation: string;
+      observedAt: string;
+    }[];
+  }[];
+}
 export interface Page<T> {
   items: T[];
   nextCursor: string | null;
@@ -150,6 +185,13 @@ export interface ChoreCaseFile {
 }
 export interface UserProfile extends CasePerson {
   phoneNumber?: string;
+  storedAccountStatus?: string;
+  effectiveRestriction?: {
+    code: string;
+    type: string;
+    message: string;
+    expiresAt: string | null;
+  } | null;
   rawIdentityDocumentsAvailable: false;
   verification: {
     level: string;

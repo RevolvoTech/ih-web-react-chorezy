@@ -12,6 +12,7 @@ module.exports = (state, person, at) => {
     "safety.privileged",
     "referrals.write",
     "audit.read",
+    "investigation.write",
   ];
   state.assuranceLevel = "aal2";
   state.permissionsConfigured = true;
@@ -20,12 +21,19 @@ module.exports = (state, person, at) => {
   state.ticketPriority = "urgent";
   state.notes = [];
   state.replyKeys = {};
+  state.investigations = [];
+  state.investigationCreates = 0;
+  state.investigationReleases = 0;
+  state.preservationReleases = 0;
+  state.preservationRetries = 0;
+  state.storageDiagnostics = 0;
+  state.preservationPending = false;
   const counts = () => ({
     supportUnread: state.readAcknowledged ? 0 : 2,
     supportUnreadMessages: state.readAcknowledged ? 0 : 3,
     supportUnresolved: state.ticketStatus === "resolved" ? 1 : 3,
     emergencyUnresolved: 2,
-    casesNeedingAttention: 1,
+    casesNeedingAttention: 1 + state.investigations.filter((item) => item.status === "active" || ["active", "pending"].includes(item.preservation.status)).length,
     generatedAt: at,
     scope: "all_persisted_records",
   });
@@ -87,6 +95,76 @@ module.exports = (state, person, at) => {
         mfaEnrolled: true,
         permissionsConfigured: true,
       });
+    if (
+      /^\/workspace\/users\/[^/]+\/investigations(?:\/[^/]+\/(?:release|preservation\/(?:retry|diagnostic|release)))?$/.test(
+        path,
+      )
+    ) {
+      if (request.method() === "GET")
+        return respond(page(state.investigations));
+      if (!state.capabilities.includes("investigation.write") || state.assuranceLevel !== "aal2") {
+        await reply(
+          {
+            success: false,
+            code: "STAFF_MFA_REQUIRED",
+            message: "Specific permission and current MFA are required.",
+          },
+          403,
+        );
+        return true;
+      }
+      const body = request.postDataJSON();
+      const recordId = path.split("/")[5],
+        existing = state.investigations.find((item) => item.id === recordId);
+      if (path.includes("/preservation/")) {
+        if (path.endsWith("/diagnostic")) {
+          state.storageDiagnostics++;
+          return respond({ investigationId: recordId, gateRelaxed: false, preservationConfirmed: false, note: "Storage observations cannot prove the original delete has ended. No gate was released.", observations: [{ operationId: "fixture-unresolved", kind: "stream_recording_delete", phase: "uncertain", observations: [{ keyHash: "fixture-hashed-reference", observation: "absent_at_observation", observedAt: at }], unresolved: true }] });
+        }
+        if (path.endsWith("/release")) {
+          if (existing.preservation.status !== "active") {
+            await reply({ success: false, code: "PRESERVATION_STATE_UNKNOWN", message: "Pending preservation cannot be released." }, 409);
+            return true;
+          }
+          state.preservationReleases++;
+          existing.preservation.status = "released";
+          return respond({ id: recordId, preservationStatus: "released", accountStatusUnchanged: true });
+        }
+        state.preservationRetries++;
+        if (!state.preservationPending) existing.preservation.status = "active";
+        return respond(existing);
+      }
+      if (path.endsWith("/release")) {
+        state.investigationReleases++;
+        const id = path.split("/").at(-2),
+          record = state.investigations.find((item) => item.id === id);
+        record.status = "released";
+        record.releasedAt = at;
+        record.releaseReason = body.reason;
+        return respond({ id, status: "released", preservationRetained: true });
+      }
+      state.investigationCreates++;
+      const record = {
+        id: String(300 + state.investigationCreates).padStart(24, "0"),
+        userId: "000000000000000000000001",
+        status: "active",
+        reason: body.reason,
+        publicMessage: body.publicMessage,
+        createdBy: "fixture-staff",
+        createdAt: at,
+        preservation: {
+          status: state.preservationPending ? "pending" : "active",
+          coverage: "current_records",
+          priorDeletionCount: 0,
+          subjects: [
+            "user:000000000000000000000001",
+            "chore:000000000000000000000101",
+          ],
+        },
+      };
+      state.investigations.push(record);
+      return respond(record);
+    }
     if (path === "/workspace/attention/counts") return respond(counts());
     if (path === "/workspace/support-presence") {
       state.lastActiveAt = new Date().toISOString();
@@ -98,6 +176,7 @@ module.exports = (state, person, at) => {
     }
     if (path.startsWith("/workspace/attention/")) {
       const kind = path.split("/").at(-1);
+      if (kind === "investigation") return respond(page(state.investigations.filter((item) => item.status === "active" || ["active", "pending"].includes(item.preservation.status)).map((item) => ({ id: item.id, targetUserId: person.id, summary: item.reason, status: item.status === "active" ? "account_frozen" : `account_released_preservation_${item.preservation.status}`, kind }))));
       const item =
         kind === "support"
           ? {
@@ -291,7 +370,10 @@ module.exports = (state, person, at) => {
       return respond({
         ...person,
         role: "Adult helper",
-        status: "active",
+        status: state.investigations.some((item) => item.status === "active") ? "under_investigation" : "active",
+        storedAccountStatus: "active",
+        isActive: !state.investigations.some((item) => item.status === "active"),
+        effectiveRestriction: state.investigations.some((item) => item.status === "active") ? { code: "ACCOUNT_UNDER_INVESTIGATION", type: "investigation", message: "Contact support to appeal.", expiresAt: null } : null,
         guardians: [],
         rawIdentityDocumentsAvailable: false,
         verification: {

@@ -836,6 +836,7 @@ html:has(.chorezy-admin) {
   background: var(--surface);
   max-height: calc(100dvh - 40px);
   overflow: auto;
+  overscroll-behavior: contain;
 }
 .admin-dialog::backdrop {
   background: rgba(21, 33, 59, 0.45);

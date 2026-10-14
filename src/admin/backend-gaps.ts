@@ -18,9 +18,9 @@ export const adminContractGaps: readonly AdminContractGap[] = [
     feature: "investigation",
     requiredAuthority: "Chorezy backend",
     missingContracts: [
-      "Durable until-released investigation freeze",
-      "Audited release preserving overlapping restrictions",
-      "Linked investigation lifecycle",
+      "Trusted production staff capability/audit provisioning and deployment",
+      "Genuine current-MFA staff mutation verification",
+      "Mobile restricted-account support/emergency integration",
     ],
     verificationGate: "Restriction concurrency, appeal and emergency access",
   },
@@ -28,9 +28,9 @@ export const adminContractGaps: readonly AdminContractGap[] = [
     feature: "evidence_preservation",
     requiredAuthority: "Chorezy backend/storage",
     missingContracts: [
-      "Durable scoped holds",
-      "Shared renewable preservation/deletion leases",
-      "Deletion and retention guards for approved record/media/account hooks",
+      "Operational quiescence proof and separately authorized uncertain-delete reconciliation",
+      "Managed audit key rotation/retention and storage preservation operations",
+      "Deployed owned-record checks for the implemented deletion/retention hooks",
     ],
     verificationGate: "Competing hold/delete and storage race tests",
   },
@@ -68,7 +68,7 @@ export const adminContractGaps: readonly AdminContractGap[] = [
     requiredAuthority: "Chorezy backend and mobile app",
     missingContracts: [
       "Mobile integration for the implemented limited support challenge/session",
-      "Reviewed emergency boundary for restricted accounts",
+      "Native own-ticket/appeal and participant-authorized emergency verification",
     ],
     verificationGate:
       "No marketplace bypass; own-ticket/appeal/emergency access",

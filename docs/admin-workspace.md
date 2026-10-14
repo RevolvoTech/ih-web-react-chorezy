@@ -23,6 +23,8 @@ All routes below are under `/api/v1/admin`; every request carries the current ve
 | Private profiles | Contact/account/verification status, persisted provenance, independently gated helper earnings, payout onboarding and paged account transactions |
 | Support | Paged inbox, ticket details and messages; explicit page acknowledgement; version-checked resolve/reopen, priority and own assignment; internal notes; idempotent replies/notes |
 | Safety | Existing suspension/exclusion/note operations with action-specific capability checks and current MFA for privileged operations |
+| Investigations | Durable account freeze, separate account/evidence release, reason history and current `investigation.write` plus `aal2` |
+| Preservation | Target account and linked retained chore holds; pending/held/released states; shared deletion coordination; bounded read-only storage diagnostics |
 | Activity history | Server-timestamped support heartbeat and reply activity; consumer API returns the last recorded activity, never a fabricated live status |
 | Limited support access | Password plus emailed challenge; short-lived, revocable session restricted to own support tickets and appeals |
 
@@ -56,9 +58,11 @@ The website needs the existing public staff Supabase URL/key and `NEXT_PUBLIC_CH
 
 ## Remaining work and release gates
 
-`src/admin/backend-gaps.ts` lists remaining product contracts. Durable investigation freezes, overlapping release correctness, shared preservation/deletion leases and retention hooks are the next approved isolated slice. The existing manual review hold is still a timed account suspension. Specific financial hold/release/refund/payout operations are not approved here. Recovery queues, chore intervention and scoped evidence export remain pending.
+`src/admin/backend-gaps.ts` lists remaining contracts and operational verification gates. Durable until-released investigations and shared preservation/deletion coordination are implemented in this isolated branch. The old manual review action remains a timed suspension; use the separate investigation controls for an until-released freeze. The account freeze commits before preservation coordination and remains active if storage is uncertain. Account release does not release evidence, and known evidence release does not release the account or other holds. Pending evidence remains actionable in Case files after account release. Specific financial hold/release/refund/payout operations are not approved here. Recovery queues, chore intervention and scoped evidence export remain pending.
 
-Limited support/appeal access is implemented on the backend; mobile integration and a reviewed emergency access boundary remain pending. Legacy Emergency media reads and older staff operations still need broader audit coverage. Raw identity-document access requires a separately approved capability and policy.
+Limited support/appeal access and the exact participant/current-Guardian Noonlight restricted-session boundary are implemented on the backend. Native limited-session integration and end-to-end verification remain pending. Ordinary frozen-account push previews are blocked; only the exact existing participant-authorized emergency event can pass. Support/appeal/restriction messages currently have no FCM producer, so no arbitrary safety/account category grants a push exception. Legacy Emergency media reads and older staff operations still need broader audit coverage. Raw identity-document access requires a separately approved capability and policy.
+
+An uncertain external deletion is never automatically retried or released by lease expiry. HEAD diagnostics are read-only, limited to 20 operations and 20 privately recorded object references, with a 10-second HEAD read budget and a 2.5-second abort per object. Truncated/unavailable observations are explicit. Present or absent snapshots do not prove the original delete has terminated. Verify the original worker's termination/quiescence and make a separately authorized operational reconciliation decision before changing its gate; this UI has no general unlock endpoint. Audit integrity is application signing, not an external immutable archive.
 
 Before release, verify genuine staff/nonstaff access, explicit capabilities/current MFA, deployed CORS, audit configuration, restrictive account flows, and owned sandbox mutations. Fixture browser actions do not prove real owner mutations, provider behavior or production readiness.
 
@@ -77,4 +81,8 @@ node scripts/validate-seo.mjs
 
 Backend: `npm test -- --runInBand tests/integration/admin-workspace.test.js tests/unit/support/supportChatRoutes.test.js` passed 17 tests across two suites. A Mongo shutdown ECONNRESET warning did not change exit code 0. Website API tests passed 13 tests; final TypeScript, ESLint, isolated webpack build and SEO validation passed. Normal `.next` imports were restored in generated `next-env.d.ts` and type checking passed with that form. The final gate and browser outcomes are recorded in `docs/qa/admin-launch-core-20261014.json`.
 
-Historical UX evidence in `admin-ux-20261014.json` predates this core feature slice. No full matrix row is promoted from these fixtures: providerCalls=0, realStaffMutations=0, fullMatrixRowsPromoted=0.
+The later investigation/preservation verification is recorded in `docs/qa/admin-freeze-20261014.json` and the current worker checkpoint. It includes real Mongo transaction races, final push/session and payout sync checks, and intercepted desktop/390px/320px browser states. The fixture browser and owned port 4063 preview are closed. Inherited port 4062 and owner 4058/4059 previews were preserved. New mutation receipts reject malformed/wrong-account replies and released replays before displaying a successful freeze/release; uncertain responses retain the request identity and refresh the record.
+
+The private participant badge shows the effective current account restriction, independent of the legacy stored account status. Pending and held investigations show Under investigation; another durable ban remains Restricted after investigation release. The server returns stored status separately without rewriting legacy flags. The final preservation suite is **29 PASS**, and the refreshed fixture screenshots verify the same effective badge.
+
+Historical UX evidence in `admin-ux-20261014.json` predates these feature slices. No full matrix row is promoted from fixtures: providerCalls=0, realStaffMutations=0, fullMatrixRowsPromoted=0.

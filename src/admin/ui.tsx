@@ -148,9 +148,29 @@ export function ConfirmDialog({
       ref={ref}
       className="admin-dialog"
       aria-labelledby="admin-confirm-title"
+      tabIndex={-1}
       onCancel={(event) => {
         if (busy) event.preventDefault();
         else onClose();
+      }}
+      onKeyDown={(event) => {
+        if (event.key !== "Tab") return;
+        const dialog = event.currentTarget;
+        const controls = Array.from(
+          dialog.querySelectorAll<HTMLElement>(
+            'button:not(:disabled), input:not(:disabled), textarea:not(:disabled), select:not(:disabled), a[href], [tabindex="0"]',
+          ),
+        ).filter((element) => element.getClientRects().length > 0);
+        if (!controls.length) {
+          event.preventDefault();
+          dialog.focus();
+        } else if (event.shiftKey && document.activeElement === controls[0]) {
+          event.preventDefault();
+          controls.at(-1)?.focus();
+        } else if (!event.shiftKey && document.activeElement === controls.at(-1)) {
+          event.preventDefault();
+          controls[0].focus();
+        }
       }}
     >
       <h2 id="admin-confirm-title">{title}</h2>
@@ -175,17 +195,58 @@ export function ConfirmDialog({
     </dialog>
   );
 }
-export const humanize = (value: string) =>
-  value.replace(/([a-z\d])([A-Z])/g, "$1 $2").replace(/[_-]/g, " ");
+export function humanize(value: string) {
+  const words = value
+    .replace(/([a-z\d])([A-Z])/g, "$1 $2")
+    .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2")
+    .replace(/[_ .-]+/g, " ")
+    .trim()
+    .toLowerCase();
+  const acronyms: Record<string, string> = {
+    ai: "AI",
+    id: "ID",
+    ip: "IP",
+    s3: "S3",
+    url: "URL",
+    usd: "USD",
+    otp: "OTP",
+  };
+  const result = words
+    .split(" ")
+    .map((word) => acronyms[word] || word)
+    .join(" ");
+  return result ? result[0].toUpperCase() + result.slice(1) : "Not recorded";
+}
 export function time(value?: string) {
   if (!value) return "Not recorded";
   const date = new Date(value);
   return Number.isNaN(date.getTime())
-    ? "Not recorded"
+    ? "Invalid timestamp"
     : new Intl.DateTimeFormat("en-US", {
         dateStyle: "medium",
         timeStyle: "short",
       }).format(date);
+}
+export function formatRecordValue(value: unknown): string {
+  if (value === null || value === undefined || value === "")
+    return "Not recorded";
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (value instanceof Date) return time(value.toISOString());
+  if (Array.isArray(value))
+    return value.length
+      ? value.map(formatRecordValue).join(" · ")
+      : "None recorded";
+  if (typeof value === "object") {
+    const fields = Object.entries(value);
+    return fields.length
+      ? fields
+          .map(([key, item]) => `${humanize(key)}: ${formatRecordValue(item)}`)
+          .join(" · ")
+      : "Not recorded";
+  }
+  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value))
+    return time(value);
+  return String(value);
 }
 export function money(value?: number, currency = "USD", cents = false) {
   if (value === undefined || !Number.isFinite(value)) return "Not available";

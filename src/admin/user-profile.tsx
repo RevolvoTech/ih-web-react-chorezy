@@ -17,11 +17,17 @@ import {
   time,
 } from "./ui";
 
-export function PrivateUserProfile({ userId }: { userId: string }) {
+export function PrivateUserProfile({
+  userId,
+  refreshKey = 0,
+}: {
+  userId: string;
+  refreshKey?: number;
+}) {
   const { api } = useAdmin();
   const { authority } = useWorkspace();
   const load = useCallback(() => api.userProfile(userId), [api, userId]);
-  const state = useRemote(load, `user:${userId}:profile`);
+  const state = useRemote(load, `user:${userId}:profile:${refreshKey}`);
   const profile = state.data;
   return (
     <>
@@ -177,15 +183,19 @@ function PrivateUserFinance({ userId }: { userId: string }) {
                 {time(finance.payout?.lastStatusRefreshAt)}
               </Fact>
               <Fact label="Disabled reason">
-                {finance.payout?.disabledReason || "Not recorded"}
+                {finance.payout?.disabledReason
+                  ? humanize(finance.payout.disabledReason)
+                  : "Not recorded"}
               </Fact>
               <Fact label="Requirements due">
-                {finance.payout?.requirementsCurrentlyDue?.join(", ") ||
-                  "None recorded"}
+                {finance.payout?.requirementsCurrentlyDue
+                  ?.map(humanize)
+                  .join(", ") || "None recorded"}
               </Fact>
               <Fact label="Requirements past due">
-                {finance.payout?.requirementsPastDue?.join(", ") ||
-                  "None recorded"}
+                {finance.payout?.requirementsPastDue
+                  ?.map(humanize)
+                  .join(", ") || "None recorded"}
               </Fact>
             </dl>
             <p>{finance.payoutNote}</p>

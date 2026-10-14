@@ -9,6 +9,7 @@ import { PagedRecords } from "./paged-records";
 import { AttentionRecords } from "./attention";
 import { EvidenceAccess } from "./evidence-access";
 import { PrivateUserProfile } from "./user-profile";
+import { InvestigationControls } from "./investigations";
 import { canAct, useWorkspace } from "./workspace-state";
 import {
   AdminButton,
@@ -21,6 +22,7 @@ import {
   humanize,
   money,
   time,
+  formatRecordValue,
 } from "./ui";
 import type { ChoreCaseFile, LookupRecord } from "./workspace-contracts";
 
@@ -165,7 +167,16 @@ export function CasesPage() {
         !choreId &&
         !userId &&
         params.get("attention") === "case" && (
-          <AttentionRecords kind="case" title="Cases needing attention" />
+          <>
+            <AttentionRecords
+              kind="case"
+              title="Trust cases needing attention"
+            />
+            <AttentionRecords
+              kind="investigation"
+              title="Investigations and preservation needing attention"
+            />
+          </>
         )}
       {!identifier && !choreId && !userId && (
         <Panel variant="padded" title="Find the record you need">
@@ -185,6 +196,7 @@ export function CasesPage() {
 }
 function UserRecords({ userId }: { userId: string }) {
   const { api } = useAdmin();
+  const [profileRevision, setProfileRevision] = useState(0);
   const [kind, setKind] = useState("identity");
   const chores = useCallback(
     (cursor: string) => api.userChores(userId, cursor),
@@ -202,7 +214,12 @@ function UserRecords({ userId }: { userId: string }) {
   );
   return (
     <>
-      <PrivateUserProfile userId={userId} />
+      <PrivateUserProfile userId={userId} refreshKey={profileRevision} />
+      <InvestigationControls
+        key={userId}
+        userId={userId}
+        onChanged={() => setProfileRevision((revision) => revision + 1)}
+      />
       <PagedRecords
         title="Participant chores"
         scope={`user:${userId}:chores`}
@@ -243,7 +260,7 @@ function UserRecords({ userId }: { userId: string }) {
               .filter(([key]) => !["id", "userId", "_id"].includes(key))
               .map(([key, value]) => (
                 <Fact key={key} label={humanize(key)}>
-                  {display(value)}
+                  {formatRecordValue(value)}
                 </Fact>
               ))}
           </dl>
@@ -735,12 +752,4 @@ function CaseAudit({ choreId }: { choreId: string }) {
       )}
     />
   );
-}
-function display(value: unknown): string {
-  if (value === null || value === undefined) return "Not recorded";
-  if (typeof value === "object")
-    return Object.entries(value)
-      .map(([key, item]) => `${humanize(key)}: ${display(item)}`)
-      .join(" · ");
-  return String(value);
 }

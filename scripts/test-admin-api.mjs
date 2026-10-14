@@ -201,6 +201,26 @@ test("failed financial mutations are never automatically retried", async () => {
   await assert.rejects(api.releaseReferrals(1), /Acknowledgement lost/);
   assert.equal(calls, 1);
 });
+
+test("investigation receipts cannot claim a freeze or release for malformed or different records", async () => {
+  const userId = "000000000000000000000001", investigationId = "000000000000000000000301";
+  let receipt, calls = 0;
+  const api = createAdminApi("https://api.chorezy.com", async () => "fixture",
+    async () => { calls++; return response({ data: receipt }); });
+  const payload = { reason: "Reported concern", publicMessage: "Contact support", requestKey: "stable-fixture-key" };
+  for (receipt of [null, {}, { id: investigationId, userId: "000000000000000000000002", status: "active", preservation: { status: "active" } }])
+    await assert.rejects(api.createInvestigation(userId, payload), error => error.code === "INVESTIGATION_RESULT_UNCONFIRMED");
+  receipt = { id: investigationId, userId, status: "released", preservation: { status: "active" }, replayed: true };
+  await assert.rejects(api.createInvestigation(userId, payload), error => error.code === "INVESTIGATION_ALREADY_RELEASED");
+  receipt = { id: investigationId, userId, status: "active", preservation: { status: "pending" } };
+  assert.equal((await api.createInvestigation(userId, payload)).preservation.status, "pending");
+  receipt = { id: "different-record", status: "released", preservationStatus: "released" };
+  await assert.rejects(api.releaseInvestigation(userId, investigationId, "Resolved"), error => error.code === "INVESTIGATION_RESULT_UNCONFIRMED");
+  await assert.rejects(api.releasePreservation(userId, investigationId, "Review finished"), error => error.code === "INVESTIGATION_RESULT_UNCONFIRMED");
+  receipt = { investigationId, observations: [], gateRelaxed: true };
+  await assert.rejects(api.preservationDiagnostic(userId, investigationId, "Inspect only"), error => error.code === "INVESTIGATION_RESULT_UNCONFIRMED");
+  assert.equal(calls, 8, "No ambiguous mutation was automatically retried");
+});
 test("negative or unknown states cannot masquerade as successful states", () => {
   for (const value of [
     "unverified",

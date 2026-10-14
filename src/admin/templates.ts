@@ -48,6 +48,11 @@ export function templatesFor(
   if (kind === "restriction")
     return [
       {
+        id: "investigation",
+        label: "Account under investigation",
+        body: `Your Chorezy account is under investigation and normal account access is paused until the investigation is released. Reason: ${context.reason || "[[public investigation reason]]"}. Contact Chorezy support if you would like to appeal.`,
+      },
+      {
         id: "temporary",
         label: "Temporary restriction",
         body: `Your Chorezy account is temporarily restricted. Reason: ${context.reason || "[[restriction reason]]"}. The restriction ends ${context.expiry || "[[actual expiry date and time]]"}. Contact Chorezy support if you need to discuss this decision.`,
